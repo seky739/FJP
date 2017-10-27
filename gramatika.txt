@@ -1,0 +1,46 @@
+program = block '.' .
+
+block = [ 'const' type ident ':=' number [',' ident ':=' number]* ';']
+        [ type ident [',' ident]* ';']*
+		[ 'function' ident '(' [type ident [',' type ident]* ]? ')' ':' type | 'void' ';' block ';' ]* statement 
+
+statement = [ ident ':=' multipleAssigned ';'| 'call' ident 
+              | 'begin' statement [';' statement ]* 'end' 
+              | 'if' condition 'then' statement+ ['else' statement+]?
+              | 'while' '(' condition ')' 'do' statement 
+			  | 'repeat' statement 'until' '(' condition ')'
+			  | 'do' statement 'while' '(' condition ')'
+			  | 'for' '(' ident ':=' NUMBER ';' condition ';'  forStatement ')' statement
+			  | 'switch' '(' condition ')' '{' cas* default-cas'}' 
+			  | ident ':=' '(' condition ')' '?' expression ':' expression ';'
+			  | '{' ident [',' ident]+ '}' '=' '{' [NUMBER | BOOLVALUE] [',' [NUMBER | BOOLVALUE]]+ '}'
+			  | 'return' retrn? ';'
+			]
+			  
+			  
+
+retrn = ident
+			  
+forStatement = 	ident ':=' expression	  
+			  
+cas= 'case' NUMBER ':' statement* 'break'';'
+
+default-cas= 'default' ':' statement* 'break'';'			  
+			  
+			  
+multipleAssigned  = [ident ':=']* | expression
+
+condition = expression ('='|'#'|'<'|'<='|'>'|'>=') expression 
+
+type = 'boolean' | 'int'
+
+expression = [ '+'|'-'] term [ ('+'|'-') term]*
+
+term = factor {('*'|'/') factor}
+
+factor = ident | NUMBER | '(' expression ')'
+
+NUMBER = [0-9] [0-9]*
+BOOLVALUE = 'true' | 'false'
+
+
