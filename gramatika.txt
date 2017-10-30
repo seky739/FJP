@@ -10,10 +10,10 @@ statement = [ ident ':=' multipleAssigned ';'| 'call' ident
               | 'while' '(' condition ')' 'do' statement 
 			  | 'repeat' statement 'until' '(' condition ')'
 			  | 'do' statement 'while' '(' condition ')'
-			  | 'for' '(' ident ':=' NUMBER ';' condition ';'  forStatement ')' statement
+			  | 'for' '(' ident ':=' NUMBER ';' condition ';'  forStatement ')' statement // forStatement by mel byt tak abych nemohl volat funkci nebo delat ruzny bordel
 			  | 'switch' '(' condition ')' '{' cas* default-cas'}' 
 			  | ident ':=' '(' condition ')' '?' expression ':' expression ';'
-			  | '{' ident [',' ident]+ '}' '=' '{' [NUMBER | BOOLVALUE] [',' [NUMBER | BOOLVALUE]]+ '}'
+			  | '{' ident [',' ident]+ '}' '=' '{' [NUMBER | BOOLVALUE] [',' [NUMBER | BOOLVALUE]]+ '}' // tady by melo byt expression aby to bylo a=1 {a,b,c}={a++,++a,a+1} bacha na ssemantiku
 			  | 'return' retrn? ';'
 			]
 			  
