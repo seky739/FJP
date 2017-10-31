@@ -12,15 +12,15 @@ var : ('const' type IDENT ':=' NUMBER  (',' IDENT ':=' NUMBER)* ';')*
 statement :  IDENT ':=' multipleAssigned ';'
               | 'call' IDENT
               | 'begin' statement (';' statement )* 'end'
-              | 'if' condition 'then' statement+ ('else' statement+)?
+              | 'if' condition 'then' (statement)+ ('else' (statement)+)?
               | 'while' '(' condition ')' 'do' statement
 			  | 'repeat' statement 'until' '(' condition ')'
 			  | 'do' statement 'while' '(' condition ')'
 			  | 'for' '(' IDENT ':=' NUMBER ';' condition ';'  forStatement ')' statement // forStatement by mel byt tak abych nemohl volat funkci nebo delat ruzny bordel
-			  | 'switch' '(' condition ')' '{' cas* defaultcas'}'
+			  | 'switch' '(' condition ')' '{' (cas)* defaultcas'}'
 			  | IDENT ':=' '(' condition ')' '?' expression ':' expression ';'
 			  | '{' IDENT (',' IDENT)+ '}' '=' '{' (NUMBER | BOOLVALUE) (',' (NUMBER | BOOLVALUE))+ '}' // tady by melo byt expression aby to bylo a=1 {a,b,c}={a++,++a,a+1} bacha na ssemantiku
-			  | 'return' retrn? ';'
+			  | 'return' (retrn)? ';'
 			;
 
 
@@ -29,19 +29,19 @@ retrn : IDENT;
 
 forStatement :	IDENT ':=' expression;
 
-cas : 'case' NUMBER ':' statement* 'break'';';
+cas : 'case' NUMBER ':' (statement)* 'break'';';
 
-defaultcas: 'default' ':' statement* 'break'';';
+defaultcas: 'default' ':' (statement)* 'break'';';
 
 
-multipleAssigned  : (IDENT ':=')* expression;
+multipleAssigned  : (IDENT ':=')* | expression;
 
 condition : expression ('='|'#'|'<'|'<='|'>'|'>=') expression;
 
 type : 'boolean'
         | ' int';
 
-expression : ( '+'|'-') term ( ('+'|'-') term)*;
+expression : ('+'|'-') term (('+'|'-')* term)*;
 
 term : factor (('*'|'/') factor)*;
 
