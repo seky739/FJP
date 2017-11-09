@@ -1,4 +1,5 @@
-package expSources;// Generated from C:/Users/micha/IdeaProjects/Test/src\Exp.g4 by ANTLR 4.7
+// Generated from C:/Users/micha/IdeaProjects/Test/src\Exp.g4 by ANTLR 4.7
+package expSources;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 /**

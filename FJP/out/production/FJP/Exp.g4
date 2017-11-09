@@ -39,7 +39,7 @@ multipleAssigned  : (IDENT ':=')* | expression;
 condition : expression ('='|'#'|'<'|'<='|'>'|'>=') expression;
 
 type : 'boolean'
-        | 'int'; // tady jsem pridal Whitespace aby jsem mohl testovat whitespace problem ze to zere i s mezerama takze pak vyjde spatny strom
+        | ' int'; // tady jsem pridal Whitespace aby jsem mohl testovat whitespace problem ze to zere i s mezerama takze pak vyjde spatny strom
 
 expression : ('+'|'-') term (('+'|'-')* term)*;
 
@@ -50,14 +50,14 @@ factor : IDENT
         | '(' expression ')';
 
 IDENT : ([a-z]
-        |[A-Z])([a-z]
+        |[ A-Z])([a-z]
         | [A-Z]
         |[0-9])*;
 
 NUMBER : [0-9][0-9]*;
 BOOLVALUE : 'true' | 'false';
 
-WS :   [ \t\r\n] -> skip ;
-
+WhiteSpace : (' '|'\t') -> skip;
+NewLine : ('\r'?'\n'|'\r') -> skip;
 
 

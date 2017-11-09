@@ -42,8 +42,7 @@ T__40=41
 IDENT=42
 NUMBER=43
 BOOLVALUE=44
-WhiteSpace=45
-NewLine=46
+WS=45
 '.'=1
 'function'=2
 '('=3
@@ -70,7 +69,7 @@ NewLine=46
 '}'=24
 '?'=25
 '='=26
-' return'=27
+'return'=27
 'case'=28
 'break'=29
 'default'=30
@@ -80,7 +79,7 @@ NewLine=46
 '>'=34
 '>='=35
 'boolean'=36
-' int'=37
+'int'=37
 '+'=38
 '-'=39
 '*'=40
