@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="antlr">
+    <CLASSES>
+      <root url="jar://C:/DRIVERS/antlr.jar!/" />
+      <root url="jar://C:/DRIVERS/antlrr.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
