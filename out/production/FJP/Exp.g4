@@ -2,16 +2,13 @@ grammar Exp;
 program : block '.' ;
 
 
-block :  variable* method+
+
+block :  varDef* functionDef+
 ;
 
-variable : variableConst? TYPE IDENT (ASSIGN variableValue)? END_STATEMENT ;
-variableConst: 'const';
-variableValue: NUMBER|BOOLVALUE;
-
-method: 'function' IDENT '(' (parameter (',' parameter)*)? ')' ':' returnParam  variable* 'begin' statement+ 'end';
-parameter: TYPE IDENT;
-returnParam: TYPE | 'void';
+varDef : ('const')? TYPE IDENT (ASSIGN (NUMBER|BOOLVALUE))? (',' TYPE IDENT (ASSIGN (NUMBER|BOOLVALUE))?)* END_STATEMENT
+      ;
+functionDef: 'function' IDENT '(' (TYPE IDENT (',' TYPE IDENT)* )? ')' ':' (TYPE | 'void')  varDef* 'begin' statement+ 'end';
 
 statement :  assignment
               | 'begin' statement+ 'end'
@@ -47,8 +44,7 @@ cas : 'case' NUMBER ':' (statement)* 'break'END_STATEMENT;
 defaultcas: 'default' ':' (statement)* 'break'END_STATEMENT;
 
 retrn : 'return' IDENT? END_STATEMENT; // return something; / return;
-unaryOperation: IDENT unaryOperator;
-unaryOperator: '++' | '--';
+unaryOperation: IDENT'++' | IDENT'--';
 
 condition : expression COMPARATOR expression;
 
