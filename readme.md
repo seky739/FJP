@@ -9,8 +9,9 @@
 >expSources
 
 #### Generating ANTLR classes
+Everytime the grammar changes, repeat these steps (atleast the second step)
 - Make sure the folder **src/expSources/** is empty by deleting all included files
-- Right click to Grammar file **Exp.g4** and select **Generate ANTLR Recogniser** or hit shortcut <kbd>Ctrl+Shift+G</kbd>
+- Right click to Grammar file **Exp.g4** and select **Generate ANTLR Recogniser** or hit shortcut <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd>
 
 #### Testing 
 - Use class **src/Example.java** as main class for testing
