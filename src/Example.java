@@ -27,7 +27,7 @@ public class Example {
             ExpParser parser = new ExpParser(new CommonTokenStream(lexer));
 
             ProgramVisitor programVisitor = new ProgramVisitor();
-            Program program = programVisitor.visitProgram(parser.program());
+            Program program = programVisitor.visit(parser.program());
 
             //TODO check errors
 

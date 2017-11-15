@@ -7,11 +7,9 @@ import types.Variable;
 import java.util.List;
 
 public class Program extends Identificator {
-    //public Block block;
-    public List<Block> blocks;
+    public Block block;
 
-    public Program(String name, Block block){
-        this.name = name;
-        //this.block = block;
+    public Program(Block block){
+        this.block = block;
     }
 }

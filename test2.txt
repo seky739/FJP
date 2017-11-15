@@ -1,7 +1,7 @@
-const int a := 0;
-bool b := false;
+const int a := 5;
+bool b := true;
 
-function fce(): void
+function fce(int x): void
 int c := 2;
 begin
     a := c;

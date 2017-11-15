@@ -1,4 +1,4 @@
-// Generated from /home/vnkid/Workspace/seky/FJP/FJP/src/Exp.g4 by ANTLR 4.7
+// Generated from /home/vnkid/Workspace/seky/FJP/src/Exp.g4 by ANTLR 4.7
 package expSources;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 

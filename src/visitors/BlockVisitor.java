@@ -3,6 +3,7 @@ package visitors;
 import expSources.ExpBaseVisitor;
 import expSources.ExpParser;
 import types.Block;
+import types.Method;
 import types.Variable;
 
 import java.util.List;
@@ -19,6 +20,10 @@ public class BlockVisitor extends ExpBaseVisitor<Block> {
         List<Variable> variables = ctx.variable().
                                     stream().
                                     map(method->method.accept(variableVisitor)).collect(toList());
+        MethodVisitor methodVisitor = new MethodVisitor();
+        List<Method> methods = ctx.method().stream().map(methodContext -> methodContext.accept(methodVisitor)).collect(toList());
+        block.variables = variables;
+        block.methods = methods;
 
 
         return block;
