@@ -1,0 +1,22 @@
+const int a := 5;
+bool b := true;
+
+function fce(int x): void
+int c := 2;
+begin
+    a := c;
+    c := true;
+end
+
+function main(): int
+begin
+    call fce;
+    if (a = 5) then
+        b := false;
+    else
+        begin
+            b := true;
+            a := 5;
+        end
+end
+.

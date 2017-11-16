@@ -7,10 +7,11 @@
 >lib
 - antlr_runtime library needed for parser and lexer
 >src
-- In language text field write: 
+- All source files in /src folder
 >Java
-- Write to package name: 
+- Programming language 
 >expSources
+- Generated sources from ANTLR and Exp.g4 (grammar)
 
 #### Generating ANTLR classes
 Everytime the grammar changes, repeat these steps (atleast the second step)
