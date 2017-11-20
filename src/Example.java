@@ -14,7 +14,7 @@ public class Example {
 
     public static void main(String[] args) throws IOException {
         //TODO remove this
-        args = new String[]{"test2.txt"};
+        args = new String[]{"test.txt"};
 
 
         if(args.length == 1){

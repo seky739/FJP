@@ -10,9 +10,11 @@ public class StatementVisitor extends ExpBaseVisitor<Statement>{
     public Statement visitStatement(ExpParser.StatementContext ctx) {
         System.out.println("Visit statement");
 
+        Statement statement=new Statement();
+        AssignmentVisitor assignmentVisitor=new AssignmentVisitor();
         // very long IFs
-        if(ctx.assignment() != null){
-
+        if(!ctx.assignment().equals(null)){
+            assignmentVisitor.visitAssignment(ctx.assignment());
         }else if (ctx.statement() != null){
 
         }else if(ctx.ifCondition() != null){
@@ -21,6 +23,6 @@ public class StatementVisitor extends ExpBaseVisitor<Statement>{
 
 
 
-        return super.visitStatement(ctx);
+        return statement;
     }
 }

@@ -26,11 +26,11 @@ public class MethodVisitor extends ExpBaseVisitor<Method> {
         method.returnType = VarType.getType(ctx.returnParam().getText());
 
         VariableVisitor variableVisitor = new VariableVisitor();
-        List<Variable> variables = ctx.parameter().stream().map(variable->variable.accept(variableVisitor)).collect(toList());
+        List<Variable> variables = ctx.variable().stream().map(variableContext->variableContext.accept(variableVisitor)).collect(toList());
         method.localVars = variables;
 
         StatementVisitor statementVisitor = new StatementVisitor();
-        List<Statement> statements = ctx.statement().stream().map(statement->statement.accept(statementVisitor)).collect(toList());
+        List<Statement> statements = ctx.statement().stream().map(statementContext->statementContext.accept(statementVisitor)).collect(toList());
         method.statements = statements;
 
         return method;

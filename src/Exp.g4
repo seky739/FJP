@@ -56,7 +56,7 @@ expression : PREOPERATION?term (PREOPERATION term)* //TODO pridelat unarni zname
         | NEGATION?factor (BOOLOPERATION NEGATION?factor)*
         ; //TODO mozna jeste neco chybi.. zatim mi nic nenapada
 
-term : factor (('*'|'/') factor)*;
+term : factor (MULDIV factor)*; //pridano kvuli operaci nasobeni a deleni
 
 factor : BOOLVALUE
         | NUMBER
@@ -71,6 +71,7 @@ TYPE : 'bool' | 'int';
 COMPARATOR: '='|'#'|'<'|'<='|'>'|'>=';
 PREOPERATION: '+' | '-' ;
 BOOLOPERATION: '|' | '&';
+MULDIV : '*' | '/';
 ASSIGN: ':=';
 END_STATEMENT: ';';
 NEGATION: '!';
