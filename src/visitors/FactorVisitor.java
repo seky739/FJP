@@ -13,13 +13,13 @@ public class FactorVisitor extends ExpBaseVisitor<Factor> {
 
 
 
-        if (ctx.IDENT().getText()!=null){
+        if (ctx.IDENT()!=null){
             factor.factorType=2;
             factor.identificator=ctx.IDENT().getText();
-        }else if (ctx.NUMBER().getText()!=null){
+        }else if (ctx.NUMBER()!=null){
             factor.factorType=1;
             factor.value=Integer.parseInt(ctx.NUMBER().getText());
-        }else if (ctx.BOOLVALUE().getText()!=null){
+        }else if (ctx.BOOLVALUE()!=null){
             factor.factorType=0;
             factor.value= (ctx.BOOLVALUE().equals("true")) ? (1) : (0);
         }
