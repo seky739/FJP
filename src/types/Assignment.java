@@ -3,10 +3,7 @@ package types;
 import java.util.List;
 
 public class Assignment extends Statement{
-
-   public List<String> varNames;
-   public List<Expression> expressions;
-
-
-
+    // multiple
+    public List<String> varNames;
+    public List<Expression> expressions;
 }
