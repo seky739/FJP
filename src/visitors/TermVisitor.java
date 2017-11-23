@@ -19,7 +19,7 @@ public class TermVisitor extends ExpBaseVisitor<Term> {
 
 
         term.factor.addAll(ctx.factor().stream().map(factorContext -> factorContext.accept(factorVisitor)).collect(toList()));
-        //term.operations.addAll(ctx.MULDIV().getTe) MULDIV ADD
+        //term.operations.addAll(ctx.MULDIV());
         return term;
     }
 }

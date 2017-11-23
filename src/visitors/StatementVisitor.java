@@ -11,17 +11,53 @@ public class StatementVisitor extends ExpBaseVisitor<Statement>{
         System.out.println("Visit statement");
 
         Statement statement=new Statement();
-        AssignmentVisitor assignmentVisitor=new AssignmentVisitor();
+
         // very long IFs
-        if(!ctx.assignment().equals(null)){
+        if(ctx.assignment()!=null){
+            AssignmentVisitor assignmentVisitor=new AssignmentVisitor();
             assignmentVisitor.visitAssignment(ctx.assignment());
         }else if (ctx.statement() != null){
-
+            StatementVisitor statementVisitor=new StatementVisitor();
+            //statementVisitor.visitStatement(ctx.statement());
         }else if(ctx.ifCondition() != null){
+            IfConditionVisitor conditionVisitor=new IfConditionVisitor();
+            conditionVisitor.visitIfCondition(ctx.ifCondition());
+        }
+        else if(ctx.callStatement()!=null){
 
-        }//TODO show Michal
+        }
+        else if(ctx.whileStatement()!=null){
+            WhileVisitor whileVisitor=new WhileVisitor();
+            whileVisitor.visitWhileStatement(ctx.whileStatement());
+        }
+        else if(ctx.repeatStatement()!=null){
+            RepeatVisitor repeatVisitor=new RepeatVisitor();
+            repeatVisitor.visitRepeatStatement(ctx.repeatStatement());
+        }
+        else if(ctx.doWhileStatement()!=null){
+            DoWhileVisitor doWhileVisitor=new DoWhileVisitor();
+            doWhileVisitor.visitDoWhileStatement(ctx.doWhileStatement());
+        }
+        else if(ctx.forStatement()!=null){
+            ForVisitor forVisitor=new ForVisitor();
+            forVisitor.visitForStatement(ctx.forStatement());
+        }
+        else if(ctx.switchStatement()!=null){
+            SwitchVisitor switchVisitor=new SwitchVisitor();
+            switchVisitor.visitSwitchStatement(ctx.switchStatement());
+        }
+        else if(ctx.ternaryOperation()!=null){
 
+        }
+        else if(ctx.paralelAssignment()!=null){
 
+        }
+        else if(ctx.retrn()!=null){
+
+        }
+        else if(ctx.unaryOperation()!=null){
+
+        }
 
         return statement;
     }
