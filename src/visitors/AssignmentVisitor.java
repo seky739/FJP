@@ -23,9 +23,9 @@ public class AssignmentVisitor extends ExpBaseVisitor<Assignment> {
 
         assignment.expressions.add(expressionVisitor.visitExpression(ctx.expression()));
         //// Todo visitor EXPRESSION assignment.expressions.add();
-        System.out.println(assignment.varNames.get(0)+":="+assignment.expressions.get(0).terms.get(0).factor.get(0).identificator);
-        System.out.println(assignment.varNames.get(0)+":="+assignment.expressions.get(0).terms.get(0).factor.get(0).value);
-        System.out.println(assignment.varNames.get(0)+":="+assignment.expressions.get(0).terms.get(0).factor.get(0).factorType);
+       // System.out.println(assignment.varNames.get(0)+":="+assignment.expressions.get(0).terms.get(0).factor.get(0).identificator);
+        //System.out.println(assignment.varNames.get(0)+":="+assignment.expressions.get(0).terms.get(0).factor.get(0).value);
+        //System.out.println(assignment.varNames.get(0)+":="+assignment.expressions.get(0).terms.get(0).factor.get(0).factorType);
         //List<String> nextVarnames = null;
         //assignment.varNames.addAll(nextVarnames);
 

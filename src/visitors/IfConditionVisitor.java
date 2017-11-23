@@ -15,9 +15,11 @@ public class IfConditionVisitor extends ExpBaseVisitor<IfCondition> {
 
             ifCondition.condition=conditionVisitor.visitCondition(ctx.condition());
             if(ctx.statement(0)!=null) {
+                System.out.println("Visit Then - if");
                 ifCondition.thenStatement = statementVisitor.visitStatement(ctx.statement(0));
             }
             if(ctx.statement(1)!=null){
+                System.out.println("Visit Else - if");
                 ifCondition.elseStatement=statementVisitor.visitStatement(ctx.statement(1));
             }
 
