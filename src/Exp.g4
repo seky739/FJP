@@ -28,10 +28,10 @@ statement :  assignment
 			  | unaryOperation END_STATEMENT
 			;
 
-forStatement: 'for' '('condition';' unaryOperation ')' statement; // predelal jsem for aby to bylo mene problematicke
-whileStatement: 'while' '('condition')' 'do' statement;
-doWhileStatement: 'do' statement 'while' '('condition')';
-repeatStatement: 'repeat' statement 'until' '(' condition ')';
+forStatement: 'for' '('condition';' unaryOperation ')' statement+; // predelal jsem for aby to bylo mene problematicke
+whileStatement: 'while' '('condition')' 'do' statement+;
+doWhileStatement: 'do' statement+ 'while' '('condition')';
+repeatStatement: 'repeat' statement+ 'until' '(' condition ')';
 ifCondition: 'if' '('condition')' 'then' (statement)+ ('else' (statement)+)? ;
 switchStatement: 'switch' '(' IDENT ')' '{' (cas)* defaultcas'}';
 ternaryOperation: IDENT ':=' '(' condition ')' '?' expression ':' expression END_STATEMENT;

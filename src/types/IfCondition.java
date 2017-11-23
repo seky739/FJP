@@ -2,10 +2,9 @@ package types;
 
 import types.enums.ConditionalOperations;
 
-public class IfCondition extends Condition {
-    public ConditionalOperations operation;
+public class IfCondition  {
+    public Condition condition;
 
-    public Expression leftPart, rightPart;
-
-    public boolean isNegation;
+    public  Statement thenStatement;
+    public Statement elseStatement;
 }

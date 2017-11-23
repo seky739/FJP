@@ -24,7 +24,8 @@ public class StatementVisitor extends ExpBaseVisitor<Statement>{
             conditionVisitor.visitIfCondition(ctx.ifCondition());
         }
         else if(ctx.callStatement()!=null){
-
+            CallVisitor callVisitor=new CallVisitor();
+            callVisitor.visitCallStatement(ctx.callStatement());
         }
         else if(ctx.whileStatement()!=null){
             WhileVisitor whileVisitor=new WhileVisitor();
@@ -53,7 +54,8 @@ public class StatementVisitor extends ExpBaseVisitor<Statement>{
 
         }
         else if(ctx.retrn()!=null){
-
+            ReturnVisitor returnVisitor=new ReturnVisitor();
+            returnVisitor.visitRetrn(ctx.retrn());
         }
         else if(ctx.unaryOperation()!=null){
 
