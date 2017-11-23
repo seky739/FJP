@@ -1,4 +1,4 @@
-// Generated from C:/Users/micha/Documents/GitHub/FJP/src\Exp.g4 by ANTLR 4.7
+// Generated from /home/vnkid/Workspace/seky/FJP/src/Exp.g4 by ANTLR 4.7
 package expSources;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -112,6 +112,12 @@ public interface ExpVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitCallStatement(ExpParser.CallStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ExpParser#elseStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitElseStatement(ExpParser.ElseStatementContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ExpParser#assignment}.
 	 * @param ctx the parse tree

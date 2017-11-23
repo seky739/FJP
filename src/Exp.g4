@@ -9,12 +9,11 @@ variable : variableConst? TYPE IDENT (ASSIGN variableValue)? END_STATEMENT ;
 variableConst: 'const';
 variableValue: NUMBER|BOOLVALUE;
 
-method: 'function' IDENT '(' (parameter (',' parameter)*)? ')' ':' returnParam  variable* 'begin' statement+ 'end';
+method: 'function' IDENT '(' (parameter (',' parameter)*)? ')' ':' returnParam  variable* '{' statement+ '}';
 parameter: TYPE IDENT;
 returnParam: TYPE | 'void';
 
 statement :  assignment
-              | 'begin' statement+ 'end'
               | callStatement END_STATEMENT
               | ifCondition
               | whileStatement
@@ -28,14 +27,15 @@ statement :  assignment
 			  | unaryOperation END_STATEMENT
 			;
 
-forStatement: 'for' '('condition';' unaryOperation ')' statement+; // predelal jsem for aby to bylo mene problematicke
-whileStatement: 'while' '('condition')' 'do' statement+;
-doWhileStatement: 'do' statement+ 'while' '('condition')';
-repeatStatement: 'repeat' statement+ 'until' '(' condition ')';
-ifCondition: 'if' '('condition')' 'then' (statement)+ ('else' (statement)+)? ;
+forStatement: 'for' '('condition';' unaryOperation ')' '{' statement+ '}'; // predelal jsem for aby to bylo mene problematicke
+whileStatement: 'while' '('condition')' 'do' '{' statement+ '}';
+doWhileStatement: 'do' statement+ 'while' '('condition')' END_STATEMENT;
+repeatStatement: 'repeat' '{' statement+ '}' 'until' '(' condition ')' END_STATEMENT;
+ifCondition: 'if' '('condition')' '{' (statement)+ '}' (elseStatement)? ;
 switchStatement: 'switch' '(' IDENT ')' '{' (cas)* defaultcas'}';
 ternaryOperation: IDENT ':=' '(' condition ')' '?' expression ':' expression END_STATEMENT;
 callStatement: 'call' IDENT;
+elseStatement: 'else' '{' (statement)+ '}';
 
 
 assignment: IDENT ASSIGN expression multipleAssignment* END_STATEMENT;

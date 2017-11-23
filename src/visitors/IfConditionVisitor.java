@@ -3,6 +3,11 @@ package visitors;
 import expSources.ExpBaseVisitor;
 import expSources.ExpParser;
 import types.IfCondition;
+import types.Statement;
+
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 public class IfConditionVisitor extends ExpBaseVisitor<IfCondition> {
 
@@ -10,21 +15,19 @@ public class IfConditionVisitor extends ExpBaseVisitor<IfCondition> {
     public IfCondition visitIfCondition(ExpParser.IfConditionContext ctx) {
         System.out.println("Visit If Conditon");
 
-            IfCondition ifCondition=new IfCondition();
-            ConditionVisitor conditionVisitor=new ConditionVisitor();
-            StatementVisitor statementVisitor=new StatementVisitor();
+        IfCondition ifCondition=new IfCondition();
+        ConditionVisitor conditionVisitor=new ConditionVisitor();
+        StatementVisitor statementVisitor=new StatementVisitor();
 
-            ifCondition.condition=conditionVisitor.visitCondition(ctx.condition());
-            if(ctx.statement(0)!=null) {
-                System.out.println("Visit Then - if  "+ctx.statement(0).getText());
+        ifCondition.condition = conditionVisitor.visitCondition(ctx.condition());
 
-                ifCondition.thenStatement = statementVisitor.visitStatement(ctx.statement(0));
-            }
-            if(ctx.statement(1)!=null){
-                System.out.println("Visit Else - if  "+ctx.statement(1).getText());
+        List<Statement> statements = ctx.statement().stream().map(method->method.accept(statementVisitor)).collect(toList());
+        ifCondition.statements = statements;
 
-                ifCondition.elseStatement=statementVisitor.visitStatement(ctx.statement(1));
-            }
+        if(ctx.elseStatement()!=null){
+            System.out.println("Visit Else");
+            ifCondition.elseStatements = ctx.statement().stream().map(method->method.accept(statementVisitor)).collect(toList());
+        }
 
         //from there visit condition
       return ifCondition;

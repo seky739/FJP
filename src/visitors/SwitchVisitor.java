@@ -9,15 +9,15 @@ import static java.util.stream.Collectors.toList;
 public class SwitchVisitor extends ExpBaseVisitor<Switch> {
     @Override
     public Switch visitSwitchStatement(ExpParser.SwitchStatementContext ctx) {
+        System.out.println("Visit Switch");
+
         CasVisitor casVisitor=new CasVisitor();
-        DefaultCaseVisitor defaultCaseVisitor=new DefaultCaseVisitor();
         Switch sWitch=new Switch();
 
         sWitch.variable.name=ctx.IDENT().getText();
-        sWitch.cases.addAll(ctx.cas().stream().map(casContext -> casContext.accept(casVisitor)).collect(toList()));
-        sWitch.defaultCase=defaultCaseVisitor.visitDefaultcas(ctx.defaultcas());
+        sWitch.cases = ctx.cas().stream().map(casContext -> casContext.accept(casVisitor)).collect(toList());
+        sWitch.defaultCase=casVisitor.visitDefaultcas(ctx.defaultcas());
 
-        System.out.println("Visit Switch");
         return sWitch;
     }
 }

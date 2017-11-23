@@ -5,6 +5,6 @@ import java.util.List;
 public class Cycle extends Statement{
 
     public Condition condition;
-    public Assignment assignment;
+    public Assignment assignment; // for cycle
     public List<Statement> statements;
 }

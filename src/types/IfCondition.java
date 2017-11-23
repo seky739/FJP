@@ -2,9 +2,11 @@ package types;
 
 import types.enums.ConditionalOperations;
 
+import java.util.List;
+
 public class IfCondition  {
     public Condition condition;
 
-    public  Statement thenStatement;
-    public Statement elseStatement;
+    public List<Statement> statements;
+    public List<Statement> elseStatements;
 }

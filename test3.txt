@@ -1,0 +1,13 @@
+const int a := 5;
+bool b := true;
+
+function main(): int
+{
+    if (a = 5){
+        b := false;
+    }else{
+            b := true;
+            a := 5;
+    }
+}
+.
