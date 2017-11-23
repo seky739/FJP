@@ -13,7 +13,12 @@ public class ConditionVisitor extends ExpBaseVisitor<Condition> {
         ExpressionVisitor expressionVisitor=new ExpressionVisitor();
 
         Condition condition=new Condition();
-        condition.operation= ConditionalOperations.valueOf(ctx.COMPARATOR().getText());
+
+
+
+
+        condition.operation=ConditionalOperations.getValue(ctx.COMPARATOR().getText());
+
         condition.leftPart=expressionVisitor.visitExpression(ctx.expression(0));
         condition.rightPart=expressionVisitor.visitExpression(ctx.expression(1));
 

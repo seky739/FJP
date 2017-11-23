@@ -16,9 +16,9 @@ public class StatementVisitor extends ExpBaseVisitor<Statement>{
         if(ctx.assignment()!=null){
             AssignmentVisitor assignmentVisitor=new AssignmentVisitor();
             assignmentVisitor.visitAssignment(ctx.assignment());
-        }else if (ctx.statement() != null){
-            StatementVisitor statementVisitor=new StatementVisitor();
-            //statementVisitor.visitStatement(ctx.statement());
+        //}else if (ctx.statement() != null){
+          //  StatementVisitor statementVisitor=new StatementVisitor();
+           // statementVisitor.visitStatement(ctx.statement());
         }else if(ctx.ifCondition() != null){
             IfConditionVisitor conditionVisitor=new IfConditionVisitor();
             conditionVisitor.visitIfCondition(ctx.ifCondition());
