@@ -22,6 +22,6 @@ public class IfConditionVisitor extends ExpBaseVisitor<IfCondition> {
             }
 
         //from there visit condition
-      return super.visitIfCondition(ctx);
+      return ifCondition;
     }
 }

@@ -18,6 +18,6 @@ public class RepeatVisitor extends ExpBaseVisitor <Cycle> {
         repeat.statements.addAll(ctx.statement().stream().map(statementContext -> statementContext.accept(statementVisitor)).collect(toList()));
         repeat.condition=conditionVisitor.visitCondition(ctx.condition());
 
-        return super.visitRepeatStatement(ctx);
+        return repeat;
     }
 }
