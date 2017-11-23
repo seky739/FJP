@@ -10,6 +10,7 @@ public class StatementVisitor extends ExpBaseVisitor<Statement>{
     public Statement visitStatement(ExpParser.StatementContext ctx) {
         System.out.println("Visit statement");
 
+        //System.out.println(ctx.getText());
         Statement statement=new Statement();
 
         // very long IFs

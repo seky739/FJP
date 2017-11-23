@@ -8,7 +8,7 @@ public class FactorVisitor extends ExpBaseVisitor<Factor> {
 
     @Override
     public Factor visitFactor(ExpParser.FactorContext ctx) {
-        System.out.println("Visit Factor");
+        System.out.println("Visit Factor  "+ctx.getText());
         Factor factor=new Factor();
 
 
