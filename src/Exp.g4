@@ -33,22 +33,22 @@ doWhileStatement: 'do' statement+ 'while' '('condition')' END_STATEMENT;
 repeatStatement: 'repeat' '{' statement+ '}' 'until' '(' condition ')' END_STATEMENT;
 ifCondition: 'if' '('condition')' '{' (statement)+ '}' (elseStatement)? ;
 switchStatement: 'switch' '(' IDENT ')' '{' (cas)* defaultcas'}';
-ternaryOperation: IDENT ':=' '(' condition ')' '?' expression ':' expression END_STATEMENT;
+ternaryOperation: IDENT ':=' '(' condition ')' '?' expression ':' expression END_STATEMENT; //TODO neni
 callStatement: 'call' IDENT;
 elseStatement: 'else' '{' (statement)+ '}';
 
 
 assignment: IDENT ASSIGN expression multipleAssignment* END_STATEMENT;
-multipleAssignment  : (',' IDENT ASSIGN expression);
-paralelAssignment: '{' IDENT (',' IDENT)+ '}' ASSIGN '{' (expression) (',' (expression))+ '}' END_STATEMENT;
+multipleAssignment  : (',' IDENT ASSIGN expression); //TODO neni
+paralelAssignment: '{' IDENT (',' IDENT)+ '}' ASSIGN '{' (expression) (',' (expression))+ '}' END_STATEMENT; //TODO neni
 
 
 cas : 'case' NUMBER ':' (statement)* 'break'END_STATEMENT;
 defaultcas: 'default' ':' (statement)* 'break'END_STATEMENT;
 
 retrn : 'return' IDENT? END_STATEMENT; // return something; / return;
-unaryOperation: IDENT unaryOperator;
-unaryOperator: '++' | '--';
+unaryOperation: IDENT unaryOperator; //TODO neni
+unaryOperator: '++' | '--'; //TODO neni
 
 condition : expression COMPARATOR expression;
 

@@ -21,8 +21,8 @@ public class IfConditionVisitor extends ExpBaseVisitor<IfCondition> {
 
         ifCondition.condition = conditionVisitor.visitCondition(ctx.condition());
 
-        List<Statement> statements = ctx.statement().stream().map(method->method.accept(statementVisitor)).collect(toList());
-        ifCondition.statements = statements;
+
+        ifCondition.statements = ctx.statement().stream().map(method->method.accept(statementVisitor)).collect(toList());
 
         if(ctx.elseStatement()!=null){
             System.out.println("Visit Else");
