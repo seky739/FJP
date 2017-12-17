@@ -4,6 +4,8 @@ import types.Identificator;
 import types.Method;
 import types.Variable;
 
+import java.util.List;
+
 public class TableSymbol {
     private Identificator identificator;
     private int addr;
@@ -31,6 +33,9 @@ public class TableSymbol {
         return isVariable() && this.level > 1;
     }
 
+
+
+
     public Identificator getIdentificator() {
         return identificator;
     }
@@ -53,5 +58,24 @@ public class TableSymbol {
 
     public void setLevel(int level) {
         this.level = level;
+    }
+
+    public static TableSymbol getSymbolFromTable(List<TableSymbol> tableOfSymbols, String identName, boolean isVariable){
+        TableSymbol result = null;
+        for (TableSymbol s :
+                tableOfSymbols) {
+            if(isVariable){
+                if(s.isVariable() && s.getIdentificator().name.equals(identName)){
+                    result = s;
+                    break;
+                }
+            }else {
+                if(s.isMethod() && s.getIdentificator().name.equals(identName)){
+                    result = s;
+                    break;
+                }
+            }
+        }
+        return result;
     }
 }

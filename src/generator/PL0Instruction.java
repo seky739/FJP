@@ -1,18 +1,50 @@
 package generator;
 
-public enum PL0Instruction {
-    LIT, // LIT 0, A ulož konstantu A do zásobníku
-    OPR, // OPR 0, A proveď instrukci A
-    LOD, // lod L,A    ulož hodnotu proměnné z adr. L,A na vrchol zásobníku
-    STO, // sto L,A    zapiš do proměnné z adr. L,A hodnotu z vrcholu zásobníku
-    CAL, // cal L,A    volej proceduru A z úrovně L
-    INT, // int 0,A    zvyš obsah top-registru zásobníku o hodnotu A
-    JMP, // jmp 0,A    proveď skok na adresu A
-    JMC, // jmc 0,A    proveď skok na adresu A, je-li hodnota na vrcholu zásobníku 0
-    RET // ret 0,0    návrat z procedury (return)
+public class PL0Instruction {
+    private int number;
+    private PL0InstructionType instruction;
+    private int parameter1, parameter2;
+
+    public PL0Instruction(int number, PL0InstructionType instruction, int parameter1, int parameter2){
+        this.number = number;
+        this.instruction = instruction;
+        this.parameter1 = parameter1;
+        this.parameter2 = parameter2;
+    }
+
+    public String toString(){
+        return String.format("%d %s %d %d", number, instruction.toString(), parameter1, parameter2);
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
+    public PL0InstructionType getInstruction() {
+        return instruction;
+    }
+
+    public void setInstruction(PL0InstructionType instruction) {
+        this.instruction = instruction;
+    }
+
+    public int getParameter1() {
+        return parameter1;
+    }
+
+    public void setParameter1(int parameter1) {
+        this.parameter1 = parameter1;
+    }
+
+    public int getParameter2() {
+        return parameter2;
+    }
+
+    public void setParameter2(int parameter2) {
+        this.parameter2 = parameter2;
+    }
 }
-
-
-
-
-
