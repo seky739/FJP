@@ -62,8 +62,10 @@ public class TableSymbol {
 
     public static TableSymbol getSymbolFromTable(List<TableSymbol> tableOfSymbols, String identName, boolean isVariable){
         TableSymbol result = null;
-        for (TableSymbol s :
-                tableOfSymbols) {
+
+        // there can be more var with same name
+        for (int i = tableOfSymbols.size()-1; i >= 0; i--) {
+            TableSymbol s = tableOfSymbols.get(i);
             if(isVariable){
                 if(s.isVariable() && s.getIdentificator().name.equals(identName)){
                     result = s;
@@ -76,6 +78,12 @@ public class TableSymbol {
                 }
             }
         }
+
+        //TODO symbol was not found
+        if(result == null){
+            System.err.println("Symbol "+identName+" was not found in table");
+        }
+
         return result;
     }
 }
