@@ -18,12 +18,12 @@ public class ExpressionVisitor extends ExpBaseVisitor<Expression>{
         TermVisitor termVisitor=new TermVisitor();
         FactorVisitor factorVisitor=new FactorVisitor();
         Expression expression=new Expression();
-        expression.variables=new ArrayList<>();
+        expression.variableDefs =new ArrayList<>();
         expression.operations=new ArrayList<>();
         expression.terms=new ArrayList<>();
 
         /*if(ctx.factor()!=null){
-            expression.variables.addAll(ctx.factor().stream().map(factorContext -> factorContext.accept(factorVisitor)).collect(toList()));
+            expression.variableDefs.addAll(ctx.factor().stream().map(factorContext -> factorContext.accept(factorVisitor)).collect(toList()));
         }*/
         expression.terms.addAll(ctx.term().stream().map(term -> term.accept(termVisitor)).collect(toList()));
         for (TerminalNode l:ctx.PREOPERATION()) {

@@ -2,29 +2,29 @@ package visitors;
 
 import expSources.ExpBaseVisitor;
 import expSources.ExpParser;
-import types.Variable;
+import types.VariableDef;
 import types.enums.VarType;
 
-public class VariableVisitor extends ExpBaseVisitor<Variable> {
+public class VariableVisitor extends ExpBaseVisitor<VariableDef> {
 
     @Override
-    public Variable visitVariable(ExpParser.VariableContext ctx) {
-        System.out.println("Visit variable");
-        Variable variable = new Variable();
+    public VariableDef visitVariable(ExpParser.VariableContext ctx) {
+        System.out.println("Visit variableDef");
+        VariableDef variableDef = new VariableDef();
 
-        variable.name = ctx.IDENT().getText();
-        variable.type = VarType.getType(ctx.TYPE().getText());
-        variable.isConstant = ctx.variableConst()!=null;
+        variableDef.name = ctx.IDENT().getText();
+        variableDef.type = VarType.getType(ctx.TYPE().getText());
+        variableDef.isConstant = ctx.variableConst()!=null;
         if(ctx.variableValue() == null){
-            variable.initialized = false;
-            variable.value = 0;
+            variableDef.initialized = false;
+            variableDef.value = 0;
         }else {
-            variable.initialized = true;
-            variable.value = getValue(variable.type, ctx.variableValue().getText());
+            variableDef.initialized = true;
+            variableDef.value = getValue(variableDef.type, ctx.variableValue().getText());
         }
         
-        System.out.println(variable);
-        return variable;
+        System.out.println(variableDef);
+        return variableDef;
     }
 
     private int getValue(VarType type, String value){

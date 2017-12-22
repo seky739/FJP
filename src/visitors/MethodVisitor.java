@@ -5,7 +5,7 @@ import expSources.ExpParser;
 import types.Method;
 import types.Parameter;
 import types.Statement;
-import types.Variable;
+import types.VariableDef;
 import types.enums.VarType;
 
 import java.util.List;
@@ -26,8 +26,8 @@ public class MethodVisitor extends ExpBaseVisitor<Method> {
         method.returnType = VarType.getType(ctx.returnParam().getText());
 
         VariableVisitor variableVisitor = new VariableVisitor();
-        List<Variable> variables = ctx.variable().stream().map(variableContext->variableContext.accept(variableVisitor)).collect(toList());
-        method.localVars = variables;
+        List<VariableDef> variableDefs = ctx.variable().stream().map(variableContext->variableContext.accept(variableVisitor)).collect(toList());
+        method.localVars = variableDefs;
 
         StatementVisitor statementVisitor = new StatementVisitor();
         List<Statement> statements = ctx.statement().stream().map(statementContext->statementContext.accept(statementVisitor)).collect(toList());

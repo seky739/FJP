@@ -4,9 +4,9 @@ import types.enums.VarType;
 
 import java.util.List;
 
-public class Method extends Identificator {
+public class Method extends Identifier {
 
-    public List<Variable> localVars;
+    public List<VariableDef> localVars;
     public List<Parameter> parameters;
     public List<Statement> statements;
     public VarType returnType;

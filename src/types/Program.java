@@ -1,12 +1,6 @@
 package types;
 
-import types.Identificator;
-import types.Method;
-import types.Variable;
-
-import java.util.List;
-
-public class Program extends Identificator {
+public class Program extends Identifier {
     public Block block;
 
     public Program(Block block){

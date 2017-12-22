@@ -1,4 +1,4 @@
-// Generated from C:/Users/micha/Documents/GitHub/FJP/src\Exp.g4 by ANTLR 4.7
+// Generated from /home/vnkid/Workspace/seky/FJP/src/Exp.g4 by ANTLR 4.7
 package expSources;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
@@ -31,7 +31,7 @@ public class ExpBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements Ex
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitVariable(ExpParser.VariableContext ctx) { return visitChildren(ctx); }
+	@Override public T visitVariableDef(ExpParser.VariableDefContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

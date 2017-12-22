@@ -4,7 +4,7 @@ import expSources.ExpBaseVisitor;
 import expSources.ExpParser;
 import types.Block;
 import types.Method;
-import types.Variable;
+import types.VariableDef;
 
 import java.util.List;
 
@@ -17,12 +17,12 @@ public class BlockVisitor extends ExpBaseVisitor<Block> {
         System.out.println("Visit block");
         Block block = new Block();
         VariableVisitor variableVisitor = new VariableVisitor();
-        List<Variable> variables = ctx.variable().
+        List<VariableDef> variableDefs = ctx.variableDef().
                                     stream().
                                     map(method->method.accept(variableVisitor)).collect(toList());
         MethodVisitor methodVisitor = new MethodVisitor();
         List<Method> methods = ctx.method().stream().map(methodContext -> methodContext.accept(methodVisitor)).collect(toList());
-        block.variables = variables;
+        block.variableDefs = variableDefs;
         block.methods = methods;
 
 

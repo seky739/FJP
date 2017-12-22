@@ -7,10 +7,11 @@ import java.util.List;
 public class Assignment extends Statement implements IGenerable{
     // multiple
     public List<String> varNames;
-    public List<Expression> expressions;
+    public Expression expression;
 
     @Override
     public void generateCode() {
 
     }
+
 }

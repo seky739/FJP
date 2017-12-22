@@ -7,12 +7,12 @@ import java.util.List;
 
 public class CodeGenerator {
     public static final int STACK_OFFSET = 3;
+    private static final int STACK_BASE = 1;
     private Program root;
     private int instructionCounter;
-    private int stackBase, stackTop;
+    private int stackTop;
 
     private List<PL0Instruction> instructions;
-    private List<TableSymbol> tableOfSymbols;
 
 
     public CodeGenerator(Program root){
@@ -20,45 +20,64 @@ public class CodeGenerator {
         this.instructionCounter = 0;
 
         this.instructions = new ArrayList<>();
-        this.tableOfSymbols = new ArrayList<>();
 
-        this.stackBase = 1;
         this.stackTop = 0;
     }
 
 
-    public List<String> generateInstructions(){
+    public List<String> generateAllInstructions(){
         List<String> result = new ArrayList<>();
         int actualLevel = 0;
 
         Block block = root.block;
 
-        List<Variable> variables = block.variables;
+        List<VariableDef> variableDefs = block.variableDefs;
         List<Method> methods = block.methods;
 
-        // variables
-        generateVariables(variables, this.stackTop, actualLevel);
+        // register for base, ...
+        generateInstruction(PL0InstructionType.INT, 0, STACK_OFFSET);
 
-        // finding Main function in the last
+        // 1) variableDefs
+        generateVariableDefs(variableDefs, this.stackTop, actualLevel);
+
+
+        //2) finding Main function in the last (always last)
         Method mainMethod = methods.get(methods.size()-1);
+        methods.remove(methods.size()-1); // remove it as it is not a usual method
 
-        PL0Instruction mainMethodInstr = generateInstruction(PL0InstructionType.JMP, 0, 1);
+        // need to change later
+        PL0Instruction mainMethodInstr = generateInstruction(PL0InstructionType.JMP, 0, 0);
 
         int tmpStackTop = this.stackTop;
 
-
+        // 3) other methods
         for (Method m :
                 methods) {
             TableSymbol tmpSymbol = generateMethod(m, STACK_OFFSET);
+            SymbolTable.getInstance().addSymbol(tmpSymbol);
         }
 
+        // change main jump value and process main method
+        mainMethodInstr.setParameter2(instructionCounter);
+        TableSymbol mainMethodSymbol = generateMethod(mainMethod, tmpStackTop);
+        SymbolTable.getInstance().addSymbol(mainMethodSymbol);
 
+
+        //TODO output
+        write();
 
 
         return result;
     }
 
-    public PL0Instruction generateInstruction(PL0InstructionType instruction, int parameter1, int parameter2){
+    private void write(){
+        for (PL0Instruction instruction :
+                instructions) {
+            System.out.println(instruction);
+        }
+    }
+
+    private PL0Instruction generateInstruction(PL0InstructionType instruction, int parameter1, int parameter2){
         switch (instruction){
             case INT:
                 this.stackTop += parameter2;
@@ -78,36 +97,39 @@ public class CodeGenerator {
     }
 
 
-    private void generateVariables(List<Variable> variables, int startAddress, int level) {
-        int actualAddr = startAddress;
-        // Global variables
-        if (this.stackTop == 0) {
-            actualAddr += STACK_OFFSET;
-        }
-
-        // adding to table of symbols and increasing address
-        for (Variable var : variables) {
-            tableOfSymbols.add(new TableSymbol(var, actualAddr++, level));
-        }
-        // skip increased addresses
-        generateInstruction(PL0InstructionType.INT, 0, actualAddr - startAddress);
-
-        for (Variable var : variables) {
+    private void generateVariableDefs(List<VariableDef> variableDefs, int startAddress, int level) {
+        generateInstruction(PL0InstructionType.INT, 0, variableDefs.size());
+        for (VariableDef var :
+                variableDefs) {
+            TableSymbol symbol = new TableSymbol(var, startAddress, level);
+            if(!SymbolTable.getInstance().addSymbol(symbol)){
+                //TODO symbol name already existed
+                break;
+            }
             generateInstruction(PL0InstructionType.LIT, 0, var.value);
-            TableSymbol s = TableSymbol.getSymbolFromTable(tableOfSymbols, var.name, true);
-            generateInstruction(PL0InstructionType.STO, 0, s.getAddr());
+            generateInstruction(PL0InstructionType.STO, 0, symbol.getAddr());
+            startAddress++;
+        }
+    }
+
+    private void generateVariableDef(VariableDef variableDef, int startAddress, int level){
+        TableSymbol newSymbol = new TableSymbol(variableDef, startAddress, level);
+        if(SymbolTable.getInstance().addSymbol(newSymbol)){
+            generateInstruction(PL0InstructionType.INT, 0, 1); // increase stack
+            generateInstruction(PL0InstructionType.LIT, 0, variableDef.value); // add value to stack top
+            generateInstruction(PL0InstructionType.STO, 0, newSymbol.getAddr()); // now add value from stack to address
         }
     }
 
     private TableSymbol generateMethod(Method method, int addr){
         final int level = 1;
         TableSymbol result = new TableSymbol(method, this.instructionCounter, level);
-        int lastTableSize = tableOfSymbols.size();
+        int lastTableSize = SymbolTable.getInstance().getSize();
         generateParameters(method);
-        this.stackTop += tableOfSymbols.size() - lastTableSize;
+        this.stackTop += addr + (SymbolTable.getInstance().getSize() - lastTableSize);
 
-        // local variables
-        generateVariables(method.localVars, this.stackTop, level);
+        // local variableDefs
+        generateVariableDefs(method.localVars, this.stackTop, level);
 
         // statements
         for (Statement s :
@@ -116,9 +138,9 @@ public class CodeGenerator {
         }
 
         // remove them from table
-        deleteLocalVariables(method.localVars, level);
+        SymbolTable.getInstance().removeMultipleSymbols(method.localVars, level);
 
-        // return if missing
+        // 'return' if missing
         if (!method.statements.isEmpty()) {
             Statement statement = method.statements.get(method.statements.size() - 1);
             if (!(statement instanceof Return)) {
@@ -155,24 +177,56 @@ public class CodeGenerator {
         // add params to table
         for (Parameter p : params) {
             TableSymbol newSymbol = new TableSymbol(p, actualAddr, 1);
-            tableOfSymbols.add(newSymbol);
+            SymbolTable.getInstance().addSymbol(newSymbol);
             generateInstruction(PL0InstructionType.LOD, 1, actualAddr);
             actualAddr++;
         }
     }
 
-    private void deleteLocalVariables(List<Variable> variables, int level){
-        int it = 0;
-        while(it < tableOfSymbols.size()){
-            TableSymbol s = tableOfSymbols.get(it++);
-            if (s.isVariable() && s.getLevel() == level) {
-                for (Variable v : variables) {
-                    if (s.getIdentificator().name.equals(v.name)) {
-                        tableOfSymbols.remove(s);
-                    }
-                }
+    private void generateAssignment(Assignment assignment){
+        Statement statement = assignment.expression;
+
+
+        if(statement instanceof Expression){
+            generateExpression((Expression) statement);
+        }else if(statement instanceof Call){
+            generateCall((Call) statement);
+        }else {
+            //TODO error
+        }
+        // now the value is in the top of stack -> store it
+
+        for (String var :
+                assignment.varNames) {
+            TableSymbol varSymbol = SymbolTable.getInstance().getSymbolFromTable(var, true);
+            if(varSymbol!=null){
+
             }
         }
+
+
+
+
+
+
+
     }
+
+    private void generateCall(Call call){}
+    private void generateParalelAssignment(ParalelAssignment assignment){}
+    private void generateCondition(Condition condition){}
+    private void generateIf(IfCondition condition){}
+    private void generateWhile(Cycle cycle){}
+    private void generateDoWhile(Cycle cycle){}
+    private void generateReturn(Return ret){}
+    private void generateSwitch(Switch sw){}
+    private void generateExpression(Expression expression){}
+
+
+    private void deleteLocalVariable(){
+
+    }
+
+
 }
 

@@ -1,6 +1,6 @@
 package types;
 
-public class Identificator {
+public class Identifier {
     public String name;
 
 }

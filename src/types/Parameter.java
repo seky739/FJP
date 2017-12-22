@@ -1,6 +1,4 @@
 package types;
 
-import types.enums.VarType;
-
-public class Parameter extends Variable{
+public class Parameter extends VariableDef {
 }

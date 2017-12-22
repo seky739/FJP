@@ -5,5 +5,5 @@ import java.util.List;
 public class Call extends Statement {
 
     public String functionName;
-    public List<Variable> parameters;
+    public List<VariableDef> parameters;
 }

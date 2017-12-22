@@ -2,7 +2,7 @@ package types;
 
 import types.enums.VarType;
 
-public class Variable extends Identificator {
+public class VariableDef extends Identifier {
     public VarType type;
     public boolean isConstant;
     public int value; // for bool value, 0 = false, otherwise = true

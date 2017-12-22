@@ -4,8 +4,8 @@ import types.enums.AlgebraicOperations;
 
 import java.util.List;
 
-public class Expression {
-    public List<Variable> variables;
+public class Expression extends Statement{
+    public List<VariableDef> variableDefs;
     public List<AlgebraicOperations> operations;
 
     public List<Term> terms;

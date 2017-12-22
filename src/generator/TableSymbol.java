@@ -1,28 +1,26 @@
 package generator;
 
-import types.Identificator;
+import types.Identifier;
 import types.Method;
-import types.Variable;
-
-import java.util.List;
+import types.VariableDef;
 
 public class TableSymbol {
-    private Identificator identificator;
+    private Identifier identifier;
     private int addr;
     private int level;
 
-    public TableSymbol(Identificator identificator, int addr, int level){
-        this.identificator = identificator;
+    public TableSymbol(Identifier identifier, int addr, int level){
+        this.identifier = identifier;
         this.addr = addr;
         this.level = level;
     }
 
     public boolean isVariable(){
-        return identificator instanceof Variable;
+        return identifier instanceof VariableDef;
     }
 
     public boolean isMethod(){
-        return identificator instanceof Method;
+        return identifier instanceof Method;
     }
 
     public boolean isGlobalVar(){
@@ -36,12 +34,12 @@ public class TableSymbol {
 
 
 
-    public Identificator getIdentificator() {
-        return identificator;
+    public Identifier getIdentifier() {
+        return identifier;
     }
 
-    public void setIdentificator(Identificator identificator) {
-        this.identificator = identificator;
+    public void setIdentifier(Identifier identifier) {
+        this.identifier = identifier;
     }
 
     public int getAddr() {
@@ -60,30 +58,15 @@ public class TableSymbol {
         this.level = level;
     }
 
-    public static TableSymbol getSymbolFromTable(List<TableSymbol> tableOfSymbols, String identName, boolean isVariable){
-        TableSymbol result = null;
 
-        // there can be more var with same name
-        for (int i = tableOfSymbols.size()-1; i >= 0; i--) {
-            TableSymbol s = tableOfSymbols.get(i);
-            if(isVariable){
-                if(s.isVariable() && s.getIdentificator().name.equals(identName)){
-                    result = s;
-                    break;
-                }
-            }else {
-                if(s.isMethod() && s.getIdentificator().name.equals(identName)){
-                    result = s;
-                    break;
-                }
-            }
+
+    @Override
+    public boolean equals(Object obj) {
+        boolean result = false;
+        if(obj instanceof TableSymbol){
+            TableSymbol symbol = (TableSymbol) obj;
+            result = symbol.isVariable() && symbol.getLevel() == level && symbol.getIdentifier().name.equals(identifier.name);
         }
-
-        //TODO symbol was not found
-        if(result == null){
-            System.err.println("Symbol "+identName+" was not found in table");
-        }
-
         return result;
     }
 }

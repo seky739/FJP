@@ -1,4 +1,4 @@
-// Generated from C:/Users/micha/Documents/GitHub/FJP/src\Exp.g4 by ANTLR 4.7
+// Generated from /home/vnkid/Workspace/seky/FJP/src/Exp.g4 by ANTLR 4.7
 package expSources;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -23,11 +23,11 @@ public interface ExpVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBlock(ExpParser.BlockContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ExpParser#variable}.
+	 * Visit a parse tree produced by {@link ExpParser#variableDef}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitVariable(ExpParser.VariableContext ctx);
+	T visitVariableDef(ExpParser.VariableDefContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ExpParser#variableConst}.
 	 * @param ctx the parse tree

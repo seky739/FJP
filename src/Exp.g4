@@ -2,14 +2,14 @@ grammar Exp;
 program : block '.' ;
 
 
-block :  variable* method+
+block :  variableDef* method+
 ;
 
-variable : variableConst? TYPE IDENT (ASSIGN variableValue)? END_STATEMENT ;
+variableDef : variableConst? TYPE IDENT (ASSIGN variableValue)? END_STATEMENT ;
 variableConst: 'const';
 variableValue: NUMBER|BOOLVALUE;
 
-method: 'function' IDENT '(' (parameter (',' parameter)*)? ')' ':' returnParam  variable* '{' statement+ '}';
+method: 'function' IDENT '(' (parameter (',' parameter)*)? ')' ':' returnParam  variableDef* '{' statement+ '}';
 parameter: TYPE IDENT;
 returnParam: TYPE | 'void';
 
@@ -38,8 +38,8 @@ callStatement: 'call' IDENT;
 elseStatement: 'else' '{' (statement)+ '}';
 
 
-assignment: IDENT ASSIGN expression multipleAssignment* END_STATEMENT;
-multipleAssignment  : (',' IDENT ASSIGN expression); //TODO neni
+assignment: IDENT multipleAssignment* ASSIGN (expression|callStatement);
+multipleAssignment  : ASSIGN IDENT;
 paralelAssignment: '{' IDENT (',' IDENT)+ '}' ASSIGN '{' (expression) (',' (expression))+ '}' END_STATEMENT; //TODO neni
 
 
