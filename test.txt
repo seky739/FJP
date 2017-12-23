@@ -1,8 +1,7 @@
-const int varA := 2;
-bool x := true;
+const int a := 2;
+bool b:=true;
 
-function funkce(int varB) : void
-    int varC := 5;
+function main() : void
 begin
-    varB := varC;
+    a:=5;
 end.

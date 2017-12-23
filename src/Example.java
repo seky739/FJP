@@ -1,5 +1,6 @@
 import expSources.ExpLexer;
 import expSources.ExpParser;
+import generator.CodeGenerator;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import types.Program;
@@ -14,7 +15,7 @@ public class Example {
 
     public static void main(String[] args) throws IOException {
         //TODO remove this
-        args = new String[]{"test2.txt"};
+        args = new String[]{"test.txt"};
 
 
         if(args.length == 1){
@@ -27,7 +28,16 @@ public class Example {
             ExpParser parser = new ExpParser(new CommonTokenStream(lexer));
 
             ProgramVisitor programVisitor = new ProgramVisitor();
-            Program program = programVisitor.visit(parser.program());
+            Program program = programVisitor.visitProgram(parser.program());
+
+
+            // generate code
+
+            CodeGenerator generator = new CodeGenerator(program);
+            generator.generateAllInstructions();
+
+            // table of symbols
+
 
             //TODO check errors
 

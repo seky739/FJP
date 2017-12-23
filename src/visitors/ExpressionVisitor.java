@@ -11,7 +11,7 @@ import java.util.Arrays;
 
 import static java.util.stream.Collectors.toList;
 
-public class ExpressionVisitor extends ExpBaseVisitor<Expression>{
+public class ExpressionVisitor extends ExpBaseVisitor<Expression> {
     @Override
     public Expression visitExpression(ExpParser.ExpressionContext ctx) {
         System.out.println("Visit Expression  " +ctx.getText());

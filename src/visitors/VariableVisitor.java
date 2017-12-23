@@ -8,7 +8,7 @@ import types.enums.VarType;
 public class VariableVisitor extends ExpBaseVisitor<VariableDef> {
 
     @Override
-    public VariableDef visitVariable(ExpParser.VariableContext ctx) {
+    public VariableDef visitVariableDef(ExpParser.VariableDefContext ctx) {
         System.out.println("Visit variableDef");
         VariableDef variableDef = new VariableDef();
 

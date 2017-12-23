@@ -119,6 +119,12 @@ public interface ExpVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitElseStatement(ExpParser.ElseStatementContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link ExpParser#callParam}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCallParam(ExpParser.CallParamContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link ExpParser#assignment}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

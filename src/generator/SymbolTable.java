@@ -1,5 +1,6 @@
 package generator;
 
+import types.Parameter;
 import types.VariableDef;
 
 import java.util.ArrayList;
@@ -65,6 +66,17 @@ public class SymbolTable {
         for (TableSymbol symbol :
                 symbols) {
             if (!removeSymbol(symbol)) {
+                removed = false;
+            }
+        }
+        return removed;
+    }
+
+    public boolean removeMultipleParameters(List<Parameter> params, int level){
+        boolean removed = true;
+        for (Parameter parameter :
+                params) {
+            if (!removeSymbol(parameter.name, level)) {
                 removed = false;
             }
         }

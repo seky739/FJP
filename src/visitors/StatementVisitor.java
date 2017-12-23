@@ -4,7 +4,7 @@ import expSources.ExpBaseVisitor;
 import expSources.ExpParser;
 import types.Statement;
 
-public class StatementVisitor extends ExpBaseVisitor<Statement>{
+public class StatementVisitor extends ExpBaseVisitor<Statement> {
 
     @Override
     public Statement visitStatement(ExpParser.StatementContext ctx) {

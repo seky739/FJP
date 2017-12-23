@@ -35,18 +35,17 @@ public class ExpBaseListener implements ExpListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitBlock(ExpParser.BlockContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterVariable(ExpParser.VariableContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitVariable(ExpParser.VariableContext ctx) { }
+
+	@Override
+	public void enterVariable(ExpParser.VariableDefContext ctx) {
+
+	}
+
+	@Override
+	public void exitVariable(ExpParser.VariableDefContext ctx) {
+
+	}
+
 	/**
 	 * {@inheritDoc}
 	 *

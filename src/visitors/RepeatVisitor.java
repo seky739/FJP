@@ -7,7 +7,7 @@ import types.enums.StatementType;
 
 import static java.util.stream.Collectors.toList;
 
-public class RepeatVisitor extends ExpBaseVisitor <Cycle> {
+public class RepeatVisitor extends ExpBaseVisitor<Cycle> {
 
     @Override
     public Cycle visitRepeatStatement(ExpParser.RepeatStatementContext ctx) {

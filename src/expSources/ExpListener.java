@@ -28,15 +28,15 @@ public interface ExpListener extends ParseTreeListener {
 	 */
 	void exitBlock(ExpParser.BlockContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link ExpParser#variable}.
+	 * Enter a parse tree produced by {@link ExpParser#variableDef}.
 	 * @param ctx the parse tree
 	 */
-	void enterVariable(ExpParser.VariableContext ctx);
+	void enterVariable(ExpParser.VariableDefContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link ExpParser#variable}.
+	 * Exit a parse tree produced by {@link ExpParser#variableDef}.
 	 * @param ctx the parse tree
 	 */
-	void exitVariable(ExpParser.VariableContext ctx);
+	void exitVariable(ExpParser.VariableDefContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ExpParser#variableConst}.
 	 * @param ctx the parse tree

@@ -3,9 +3,6 @@ package visitors;
 import expSources.ExpBaseVisitor;
 import expSources.ExpParser;
 import types.IfCondition;
-import types.Statement;
-
-import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 

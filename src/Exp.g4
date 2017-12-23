@@ -34,13 +34,13 @@ repeatStatement: 'repeat' '{' statement+ '}' 'until' '(' condition ')' END_STATE
 ifCondition: 'if' '('condition')' '{' (statement)+ '}' (elseStatement)? ;
 switchStatement: 'switch' '(' IDENT ')' '{' (cas)* defaultcas'}';
 ternaryOperation: IDENT ':=' '(' condition ')' '?' expression ':' expression END_STATEMENT; //TODO neni
-callStatement: 'call' IDENT;
+callStatement: 'call' IDENT '(' callParam? ')';
 elseStatement: 'else' '{' (statement)+ '}';
 
-
+callParam: (IDENT (',' IDENT)*);
 assignment: IDENT multipleAssignment* ASSIGN (expression|callStatement);
 multipleAssignment  : ASSIGN IDENT;
-paralelAssignment: '{' IDENT (',' IDENT)+ '}' ASSIGN '{' (expression) (',' (expression))+ '}' END_STATEMENT; //TODO neni
+paralelAssignment: '{' IDENT (',' IDENT)+ '}' ASSIGN '{' (variableValue) (',' (variableValue))+ '}' END_STATEMENT; //TODO neni
 
 
 cas : 'case' NUMBER ':' (statement)* 'break'END_STATEMENT;

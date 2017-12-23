@@ -3,13 +3,9 @@ package visitors;
 import expSources.ExpBaseVisitor;
 import expSources.ExpParser;
 import types.Assignment;
-import types.Expression;
-import types.VariableDef;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 public class AssignmentVisitor extends ExpBaseVisitor<Assignment> {
 

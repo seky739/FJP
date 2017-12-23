@@ -122,14 +122,14 @@ public class CodeGenerator {
     }
 
     private TableSymbol generateMethod(Method method, int addr){
-        final int level = 1;
-        TableSymbol result = new TableSymbol(method, this.instructionCounter, level);
+        final int LEVEL = 1;
+        TableSymbol result = new TableSymbol(method, this.instructionCounter, LEVEL);
         int lastTableSize = SymbolTable.getInstance().getSize();
         generateParameters(method);
         this.stackTop += addr + (SymbolTable.getInstance().getSize() - lastTableSize);
 
         // local variableDefs
-        generateVariableDefs(method.localVars, this.stackTop, level);
+        generateVariableDefs(method.localVars, this.stackTop, LEVEL);
 
         // statements
         for (Statement s :
@@ -138,7 +138,8 @@ public class CodeGenerator {
         }
 
         // remove them from table
-        SymbolTable.getInstance().removeMultipleSymbols(method.localVars, level);
+        SymbolTable.getInstance().removeMultipleSymbols(method.localVars, LEVEL);
+        SymbolTable.getInstance().removeMultipleParameters(method.parameters, LEVEL);
 
         // 'return' if missing
         if (!method.statements.isEmpty()) {
@@ -155,6 +156,7 @@ public class CodeGenerator {
 
     }
 
+
     private void generateParameters(Method method)  {
         List<Parameter> params = method.parameters;
 
@@ -162,11 +164,14 @@ public class CodeGenerator {
             return;
         }
 
+
+
         //TODO check this... maybe better returning error when this happen
         for (int i = 0; i < params.size(); i++) {
             for (int j = 0; j < method.localVars.size(); j++) {
                 if (params.get(i).name.equals(method.localVars.get(j).name)) {
-                    method.localVars.remove(j);
+                    //TODO error - same indentifier for vars and parameters
+                    return;
                 }
             }
         }
@@ -185,48 +190,84 @@ public class CodeGenerator {
 
     private void generateAssignment(Assignment assignment){
         Statement statement = assignment.expression;
-
-
+        int value = 0;
         if(statement instanceof Expression){
-            generateExpression((Expression) statement);
+            value = generateExpression((Expression) statement);
         }else if(statement instanceof Call){
             generateCall((Call) statement);
         }else {
             //TODO error
         }
         // now the value is in the top of stack -> store it
+        // first var
+        TableSymbol firstSymbol = SymbolTable.getInstance().getSymbolFromTable(assignment.varNames.get(0), true);
+        generateInstruction(PL0InstructionType.STO, 0, firstSymbol.getAddr());
 
-        for (String var :
-                assignment.varNames) {
-            TableSymbol varSymbol = SymbolTable.getInstance().getSymbolFromTable(var, true);
-            if(varSymbol!=null){
-
+        // other vars
+        for (int i = 1; i < assignment.varNames.size(); i++) {
+            // add value to top
+            generateInstruction(PL0InstructionType.LIT, 0, value);
+            TableSymbol varSymbol = SymbolTable.getInstance().getSymbolFromTable(assignment.varNames.get(i), true);
+            if(varSymbol==null){
+                //TODO error - undefined variable
             }
+            generateInstruction(PL0InstructionType.STO, 0, varSymbol.getAddr());
         }
-
-
-
-
-
-
-
     }
 
-    private void generateCall(Call call){}
-    private void generateParalelAssignment(ParalelAssignment assignment){}
+    private void generateParalelAssignment(ParalelAssignment assignment){
+        // only constants
+        //if(assignment.varNames.size() == assignment.)
+    }
     private void generateCondition(Condition condition){}
     private void generateIf(IfCondition condition){}
     private void generateWhile(Cycle cycle){}
     private void generateDoWhile(Cycle cycle){}
     private void generateReturn(Return ret){}
     private void generateSwitch(Switch sw){}
-    private void generateExpression(Expression expression){}
+    private void generateCall(Call call){
+
+        TableSymbol methodSymbol = SymbolTable.getInstance().getSymbolFromTable(call.name, false);
+        List<String> parameters = call.parameters;
+
+        for (String parameter : parameters) {
+            if(isValue(parameter)){
+                int value = 0;
+                if(parameter.chars().allMatch( Character::isDigit)){
+                    value = Integer.parseInt(parameter);
+                }else if(parameter.equals("true")){
+                    value = 1;
+                }
+                generateInstruction(PL0InstructionType.LIT, 0, value);
+            }else{
+                TableSymbol symbol = SymbolTable.getInstance().getSymbolFromTable(parameter, true);
+                generateInstruction(PL0InstructionType.LOD, 0, symbol.getAddr());
+            }
+        }
+
+        generateInstruction(PL0InstructionType.CAL, 0, methodSymbol.getAddr());
+    }
+    private int generateExpression(Expression expression){
+        int value = 0;
+        //TODO
+        generateInstruction(PL0InstructionType.LIT, 0, value);
+        return value;
+    }
 
 
     private void deleteLocalVariable(){
 
     }
 
+
+    public static boolean isValue(String value){
+        boolean result = false;
+        if(value.chars().allMatch( Character::isDigit ) ||
+                value.equals("true") || value.equals("false")){
+            result = true;
+        }
+        return result;
+    }
 
 }
 
