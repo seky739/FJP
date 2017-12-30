@@ -1,7 +1,6 @@
 const int a := 2;
-bool b:=true;
-
 function main() : void
-begin
+{
     a:=5;
-end.
+}
+.

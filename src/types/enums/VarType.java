@@ -17,8 +17,13 @@ public enum VarType {
     public static VarType getType(String textValue){
         if(textValue.equalsIgnoreCase(NUMBER.value)){
             return NUMBER;
-        }else {
+        }else if (textValue.equalsIgnoreCase(BOOL.value)){
             return BOOL;
+        }else if (textValue.equalsIgnoreCase(VOID.value)){
+            return VOID;
+        }else {
+            //TODO errors
+            return VOID;
         }
     }
 }

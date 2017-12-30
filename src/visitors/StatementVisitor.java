@@ -11,55 +11,52 @@ public class StatementVisitor extends ExpBaseVisitor<Statement> {
         System.out.println("Visit statement");
 
         //System.out.println(ctx.getText());
-        Statement statement=new Statement();
+        Statement statement = null;
 
         // very long IFs
         if(ctx.assignment()!=null){
             AssignmentVisitor assignmentVisitor=new AssignmentVisitor();
-            assignmentVisitor.visitAssignment(ctx.assignment());
-        //}else if (ctx.statement() != null){
-          //  StatementVisitor statementVisitor=new StatementVisitor();
-           // statementVisitor.visitStatement(ctx.statement());
+            statement = assignmentVisitor.visitAssignment(ctx.assignment());
         }else if(ctx.ifCondition() != null){
             IfConditionVisitor conditionVisitor=new IfConditionVisitor();
-            conditionVisitor.visitIfCondition(ctx.ifCondition());
+            statement = conditionVisitor.visitIfCondition(ctx.ifCondition());
         }
         else if(ctx.callStatement()!=null){
             CallVisitor callVisitor=new CallVisitor();
-            callVisitor.visitCallStatement(ctx.callStatement());
+            statement = callVisitor.visitCallStatement(ctx.callStatement());
         }
         else if(ctx.whileStatement()!=null){
             WhileVisitor whileVisitor=new WhileVisitor();
-            whileVisitor.visitWhileStatement(ctx.whileStatement());
+            statement = whileVisitor.visitWhileStatement(ctx.whileStatement());
         }
         else if(ctx.repeatStatement()!=null){
             RepeatVisitor repeatVisitor=new RepeatVisitor();
-            repeatVisitor.visitRepeatStatement(ctx.repeatStatement());
+            statement = repeatVisitor.visitRepeatStatement(ctx.repeatStatement());
         }
         else if(ctx.doWhileStatement()!=null){
             DoWhileVisitor doWhileVisitor=new DoWhileVisitor();
-            doWhileVisitor.visitDoWhileStatement(ctx.doWhileStatement());
+            statement = doWhileVisitor.visitDoWhileStatement(ctx.doWhileStatement());
         }
         else if(ctx.forStatement()!=null){
             ForVisitor forVisitor=new ForVisitor();
-            forVisitor.visitForStatement(ctx.forStatement());
+            statement = forVisitor.visitForStatement(ctx.forStatement());
         }
         else if(ctx.switchStatement()!=null){
             SwitchVisitor switchVisitor=new SwitchVisitor();
-            switchVisitor.visitSwitchStatement(ctx.switchStatement());
+            statement = switchVisitor.visitSwitchStatement(ctx.switchStatement());
         }
         else if(ctx.ternaryOperation()!=null){
-
+            //TODO missing
         }
         else if(ctx.paralelAssignment()!=null){
-
+            //TODO missing
         }
         else if(ctx.retrn()!=null){
             ReturnVisitor returnVisitor=new ReturnVisitor();
             returnVisitor.visitRetrn(ctx.retrn());
         }
         else if(ctx.unaryOperation()!=null){
-
+            //TODO missing
         }
 
         return statement;

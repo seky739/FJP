@@ -38,7 +38,7 @@ callStatement: 'call' IDENT '(' callParam? ')';
 elseStatement: 'else' '{' (statement)+ '}';
 
 callParam: (IDENT (',' IDENT)*);
-assignment: IDENT multipleAssignment* ASSIGN (expression|callStatement);
+assignment: IDENT multipleAssignment* ASSIGN (expression|callStatement) END_STATEMENT;
 multipleAssignment  : ASSIGN IDENT;
 paralelAssignment: '{' IDENT (',' IDENT)+ '}' ASSIGN '{' (variableValue) (',' (variableValue))+ '}' END_STATEMENT; //TODO neni
 
@@ -52,17 +52,16 @@ unaryOperator: '++' | '--'; //TODO neni
 
 condition : expression COMPARATOR expression;
 
-expression : PREOPERATION?term (PREOPERATION term)* //TODO pridelat unarni znamenko pred cislem ... potom
-        | NEGATION?factor (BOOLOPERATION NEGATION?factor)*
+expression : term ((PREOPERATION|BOOLOPERATION) term)* //TODO pridelat unarni znamenko pred cislem ... potom
         ; //TODO mozna jeste neco chybi.. zatim mi nic nenapada
 
 term : factor (MULDIV factor)*; //pridano kvuli operaci nasobeni a deleni
 
-factor : BOOLVALUE
-        | NUMBER
+factor : NEGATION? BOOLVALUE
+        | PREOPERATION? NUMBER
         | callStatement //TODO check
         | '(' expression ')'
-        | IDENT;
+        | (NEGATION|PREOPERATION)? IDENT;
 
 //lexer rules
 

@@ -24,7 +24,7 @@ public class MethodVisitor extends ExpBaseVisitor<Method> {
         method.parameters = parameters;
 
         method.returnType = VarType.getType(ctx.returnParam().getText());
-
+        String xx = ctx.returnParam().getText();
         VariableVisitor variableVisitor = new VariableVisitor();
         List<VariableDef> variableDefs = ctx.variableDef().stream().map(variableContext->variableContext.accept(variableVisitor)).collect(toList());
         method.localVars = variableDefs;

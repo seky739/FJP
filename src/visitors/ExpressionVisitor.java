@@ -4,7 +4,7 @@ import expSources.ExpBaseVisitor;
 import expSources.ExpParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import types.Expression;
-import types.enums.AlgebraicOperations;
+import types.enums.ValueOperations;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,26 +15,32 @@ public class ExpressionVisitor extends ExpBaseVisitor<Expression> {
     @Override
     public Expression visitExpression(ExpParser.ExpressionContext ctx) {
         System.out.println("Visit Expression  " +ctx.getText());
-        TermVisitor termVisitor=new TermVisitor();
-        FactorVisitor factorVisitor=new FactorVisitor();
-        Expression expression=new Expression();
-        expression.variableDefs =new ArrayList<>();
-        expression.operations=new ArrayList<>();
-        expression.terms=new ArrayList<>();
+        TermVisitor termVisitor = new TermVisitor();
 
-        /*if(ctx.factor()!=null){
-            expression.variableDefs.addAll(ctx.factor().stream().map(factorContext -> factorContext.accept(factorVisitor)).collect(toList()));
-        }*/
+        Expression expression = new Expression();
+        expression.operations = new ArrayList<>();
+        expression.terms = new ArrayList<>();
+
+
         expression.terms.addAll(ctx.term().stream().map(term -> term.accept(termVisitor)).collect(toList()));
         for (TerminalNode l:ctx.PREOPERATION()) {
-            expression.operations.add(AlgebraicOperations.getOperation(l.getText()));
+            expression.operations.add(ValueOperations.getOperation(l.getText()));
+        }
+
+        if(expression.terms.size()>1){
+            if(ctx.PREOPERATION() != null){
+                for (TerminalNode terminalNode : ctx.PREOPERATION()) {
+                    expression.operations.add(ValueOperations.getOperation(terminalNode.getText()));
+                }
+            }else {
+                for (TerminalNode terminalNode : ctx.BOOLOPERATION()) {
+                    expression.operations.add(ValueOperations.getOperation(terminalNode.getText()));
+                }
+            }
         }
         System.out.println( Arrays.toString(expression.operations.toArray()));
-
-
-
-
-
         return expression;
     }
+
+
 }

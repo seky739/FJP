@@ -18,7 +18,7 @@ public class CallVisitor extends ExpBaseVisitor<Call> {
         call.functionName=ctx.IDENT().toString();
         call.parameters = new ArrayList<>();
 
-        List<TerminalNode> nodes = ctx.callParam().IDENT();
+        List<TerminalNode> nodes = ctx.callParam() != null ? ctx.callParam().IDENT() : new ArrayList<>();
         for (TerminalNode node :
                 nodes) {
             call.parameters.add(node.getText());

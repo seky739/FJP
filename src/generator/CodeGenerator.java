@@ -64,6 +64,7 @@ public class CodeGenerator {
 
 
         //TODO output
+        System.out.println("----------");
         write();
 
 
@@ -93,22 +94,27 @@ public class CodeGenerator {
         instructions.add(newInstruction);
         instructionCounter++;
 
+        //TODO remove
+        System.out.println(newInstruction);
+
         return newInstruction;
     }
 
 
     private void generateVariableDefs(List<VariableDef> variableDefs, int startAddress, int level) {
-        generateInstruction(PL0InstructionType.INT, 0, variableDefs.size());
-        for (VariableDef var :
-                variableDefs) {
-            TableSymbol symbol = new TableSymbol(var, startAddress, level);
-            if(!SymbolTable.getInstance().addSymbol(symbol)){
-                //TODO symbol name already existed
-                break;
+        if(variableDefs.size() > 0){
+            generateInstruction(PL0InstructionType.INT, 0, variableDefs.size());
+            for (VariableDef var :
+                    variableDefs) {
+                TableSymbol symbol = new TableSymbol(var, startAddress, level);
+                if(!SymbolTable.getInstance().addSymbol(symbol)){
+                    //TODO symbol name already existed
+                    break;
+                }
+                generateInstruction(PL0InstructionType.LIT, 0, var.value);
+                generateInstruction(PL0InstructionType.STO, 0, symbol.getAddr());
+                startAddress++;
             }
-            generateInstruction(PL0InstructionType.LIT, 0, var.value);
-            generateInstruction(PL0InstructionType.STO, 0, symbol.getAddr());
-            startAddress++;
         }
     }
 
@@ -153,7 +159,38 @@ public class CodeGenerator {
     }
 
     private void generateStatement(Statement statement){
-
+        switch (statement.type){
+            case ASSIGNMENT:
+                generateAssignment((Assignment) statement);
+                break;
+            case PARALEL_ASSIGNMENT:
+                generateParalelAssignment((ParalelAssignment)statement);
+                break;
+            case IF:
+                generateIf((IfCondition)statement);
+                break;
+            case FOR:
+                break;
+            case CALL:
+                generateCall((Call) statement);
+                break;
+            case SWITCH:
+                generateSwitch((Switch)statement);
+                break;
+            case REPEAT_UNTIL:
+                break;
+            case DO_WHILE:
+                break;
+            case WHILE_DO:
+                break;
+            case EXPRESSION:
+                break;
+            case RETURN:
+                generateReturn((Return) statement);
+                break;
+            default:
+                System.out.println("something different");
+        }
     }
 
 
@@ -188,6 +225,7 @@ public class CodeGenerator {
         }
     }
 
+    // DONE
     private void generateAssignment(Assignment assignment){
         Statement statement = assignment.expression;
         int value = 0;
@@ -219,7 +257,161 @@ public class CodeGenerator {
         // only constants
         //if(assignment.varNames.size() == assignment.)
     }
-    private void generateCondition(Condition condition){}
+    private void generateCondition(Condition condition){
+        /*Variables leftVar = con.left;
+        Variables rightVar = con.right;
+        int currentPosition = 0;
+        MachineInstruction elseJmpInstruction;
+        switch (cycleType) {
+            case WHILEDO:
+                currentPosition = instructionCounter;
+                *//*porovnávací znak 0 ==, 1 <, 2 <=, 3 >=, 4 >, 5 != *//*
+                if (leftVar.name != null) {
+                    Symbol s = Symbol.getVariableFromArray(symbolsTable, leftVar.name);
+                    generateMachineInstruction(InstructionType.LOD, 0, s.getAdr());
+                } else {
+                    generateMachineInstruction(InstructionType.LIT, 0, leftVar.value);
+                }
+                if (rightVar.name != null) {
+                    Symbol s = Symbol.getVariableFromArray(symbolsTable, rightVar.name);
+                    generateMachineInstruction(InstructionType.LOD, 0, s.getAdr());
+                } else {
+                    generateMachineInstruction(InstructionType.LIT, 0, rightVar.value);
+                }
+
+                *//*porovnávací znak 0 ==, 1 <, 2 <=, 3 >=, 4 >, 5 != *//*
+                switch (con.comparator) {
+                    case 0:
+                        generateMachineInstruction(InstructionType.OPR, 0, OperationType.EQUAL.getNumber());
+                        break;
+                    case 1:
+                        generateMachineInstruction(InstructionType.OPR, 0, OperationType.LESS.getNumber());
+                        break;
+                    case 2:
+                        generateMachineInstruction(InstructionType.OPR, 0, OperationType.LESS_OR_EQUAL.getNumber());
+                        break;
+                    case 3:
+                        generateMachineInstruction(InstructionType.OPR, 0, OperationType.GREATER_OR_EQUAL.getNumber());
+                        break;
+                    case 4:
+                        generateMachineInstruction(InstructionType.OPR, 0, OperationType.GREATER.getNumber());
+                        break;
+                    case 5:
+                        generateMachineInstruction(InstructionType.OPR, 0, OperationType.NOT_EQUAL.getNumber());
+                        break;
+                    default:
+                        throw new ErrorMess(TAG + " - BAD COMPARATOR PARAMETER");
+                }
+
+                elseJmpInstruction = generateMachineInstruction(InstructionType.JMC, 0, 0);
+
+                for (Instruction i : con.instructions) {
+                    resolveInstruction(i);
+                }
+                generateMachineInstruction(InstructionType.JMP, 0, currentPosition);
+                elseJmpInstruction.setParameter2(instructionCounter);
+                break;
+
+            case DOWHILE:
+                currentPosition = instructionCounter;
+
+                for (Instruction i : con.instructions) {
+                    resolveInstruction(i);
+                }
+
+                *//*porovnávací znak 0 ==, 1 <, 2 <=, 3 >=, 4 >, 5 != *//*
+                if (leftVar.name != null) {
+                    Symbol s = Symbol.getVariableFromArray(symbolsTable, leftVar.name);
+                    generateMachineInstruction(InstructionType.LOD, 0, s.getAdr());
+                } else {
+                    generateMachineInstruction(InstructionType.LIT, 0, leftVar.value);
+                }
+                if (rightVar.name != null) {
+                    Symbol s = Symbol.getVariableFromArray(symbolsTable, rightVar.name);
+                    generateMachineInstruction(InstructionType.LOD, 0, s.getAdr());
+                } else {
+                    generateMachineInstruction(InstructionType.LIT, 0, rightVar.value);
+                }
+
+                *//*porovnávací znak 0 ==, 1 <, 2 <=, 3 >=, 4 >, 5 != *//*
+                switch (con.comparator) {
+                    case 0:
+                        generateMachineInstruction(InstructionType.OPR, 0, OperationType.EQUAL.getNumber());
+                        break;
+                    case 1:
+                        generateMachineInstruction(InstructionType.OPR, 0, OperationType.LESS.getNumber());
+                        break;
+                    case 2:
+                        generateMachineInstruction(InstructionType.OPR, 0, OperationType.LESS_OR_EQUAL.getNumber());
+                        break;
+                    case 3:
+                        generateMachineInstruction(InstructionType.OPR, 0, OperationType.GREATER_OR_EQUAL.getNumber());
+                        break;
+                    case 4:
+                        generateMachineInstruction(InstructionType.OPR, 0, OperationType.GREATER.getNumber());
+                        break;
+                    case 5:
+                        generateMachineInstruction(InstructionType.OPR, 0, OperationType.NOT_EQUAL.getNumber());
+                        break;
+                    default:
+                        throw new ErrorMess(TAG + " - BAD COMPARATOR PARAMETER");
+                }
+
+                elseJmpInstruction = generateMachineInstruction(InstructionType.JMC, 0, 0);
+
+                generateMachineInstruction(InstructionType.JMP, 0, currentPosition);
+                elseJmpInstruction.setParameter2(instructionCounter);
+                break;
+            case REPEAT:
+                currentPosition = instructionCounter;
+
+                for (Instruction i : con.instructions) {
+                    resolveInstruction(i);
+                }
+
+                *//*porovnávací znak 0 ==, 1 <, 2 <=, 3 >=, 4 >, 5 != *//*
+                if (leftVar.name != null) {
+                    Symbol s = Symbol.getVariableFromArray(symbolsTable, leftVar.name);
+                    generateMachineInstruction(InstructionType.LOD, 0, s.getAdr());
+                } else {
+                    generateMachineInstruction(InstructionType.LIT, 0, leftVar.value);
+                }
+                if (rightVar.name != null) {
+                    Symbol s = Symbol.getVariableFromArray(symbolsTable, rightVar.name);
+                    generateMachineInstruction(InstructionType.LOD, 0, s.getAdr());
+                } else {
+                    generateMachineInstruction(InstructionType.LIT, 0, rightVar.value);
+                }
+
+                *//*porovnávací znak 0 ==, 1 <, 2 <=, 3 >=, 4 >, 5 != *//*
+                switch (con.comparator) {
+                    case 0:
+                        generateMachineInstruction(InstructionType.OPR, 0, OperationType.EQUAL.getNumber());
+                        break;
+                    case 1:
+                        generateMachineInstruction(InstructionType.OPR, 0, OperationType.LESS.getNumber());
+                        break;
+                    case 2:
+                        generateMachineInstruction(InstructionType.OPR, 0, OperationType.LESS_OR_EQUAL.getNumber());
+                        break;
+                    case 3:
+                        generateMachineInstruction(InstructionType.OPR, 0, OperationType.GREATER_OR_EQUAL.getNumber());
+                        break;
+                    case 4:
+                        generateMachineInstruction(InstructionType.OPR, 0, OperationType.GREATER.getNumber());
+                        break;
+                    case 5:
+                        generateMachineInstruction(InstructionType.OPR, 0, OperationType.NOT_EQUAL.getNumber());
+                        break;
+                    default:
+                        throw new ErrorMess(TAG + " - BAD COMPARATOR PARAMETER");
+                }
+
+                elseJmpInstruction = generateMachineInstruction(InstructionType.JMC, 0, currentPosition);
+                break;
+
+        }*/
+    }
     private void generateIf(IfCondition condition){}
     private void generateWhile(Cycle cycle){}
     private void generateDoWhile(Cycle cycle){}
