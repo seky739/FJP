@@ -101,11 +101,11 @@ public interface ExpVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitSwitchStatement(ExpParser.SwitchStatementContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ExpParser#ternaryOperation}.
+	 * Visit a parse tree produced by {@link ExpParser#ternaryAssignment}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitTernaryOperation(ExpParser.TernaryOperationContext ctx);
+	T visitTernaryAssignment(ExpParser.TernaryAssignmentContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ExpParser#callStatement}.
 	 * @param ctx the parse tree

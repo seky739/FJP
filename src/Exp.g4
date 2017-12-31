@@ -21,7 +21,7 @@ statement :  assignment
 			  | doWhileStatement
 			  | forStatement
 			  | switchStatement
-			  | ternaryOperation
+			  | ternaryAssignment
 			  | paralelAssignment
 			  | retrn
 			  | unaryOperation END_STATEMENT
@@ -33,7 +33,7 @@ doWhileStatement: 'do' '{' statement+ '}' 'while' '('condition')' END_STATEMENT;
 repeatStatement: 'repeat' '{' statement+ '}' 'until' '(' condition ')' END_STATEMENT;
 ifCondition: 'if' '('condition')' '{' (statement)+ '}' (elseStatement)? ;
 switchStatement: 'switch' '(' IDENT ')' '{' (cas)* defaultcas'}';
-ternaryOperation: IDENT ':=' '(' condition ')' '?' expression ':' expression END_STATEMENT; //TODO neni
+ternaryAssignment: IDENT ':=' '(' condition ')' '?' expression ':' expression END_STATEMENT;
 callStatement: 'call' IDENT '(' callParam? ')';
 elseStatement: 'else' '{' (statement)+ '}';
 

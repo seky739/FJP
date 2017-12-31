@@ -122,7 +122,7 @@ public class ExpBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements Ex
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitTernaryOperation(ExpParser.TernaryOperationContext ctx) { return visitChildren(ctx); }
+	@Override public T visitTernaryAssignment(ExpParser.TernaryAssignmentContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

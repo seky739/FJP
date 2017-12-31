@@ -158,16 +158,6 @@ public interface ExpListener extends ParseTreeListener {
 	 */
 	void exitSwitchStatement(ExpParser.SwitchStatementContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link ExpParser#ternaryOperation}.
-	 * @param ctx the parse tree
-	 */
-	void enterTernaryOperation(ExpParser.TernaryOperationContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ExpParser#ternaryOperation}.
-	 * @param ctx the parse tree
-	 */
-	void exitTernaryOperation(ExpParser.TernaryOperationContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link ExpParser#callStatement}.
 	 * @param ctx the parse tree
 	 */

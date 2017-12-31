@@ -192,6 +192,9 @@ public class CodeGenerator {
             case RETURN:
                 generateReturn((Return) statement);
                 break;
+            case TERNARY:
+                generateTernaryAssignment((TernaryAssignment) statement);
+                break;
             case OTHER:
             default:
                 //TODO
@@ -199,6 +202,24 @@ public class CodeGenerator {
         }
     }
 
+    private void generateTernaryAssignment(TernaryAssignment assignment) throws CompilerException{
+        TableSymbol symbol = SymbolTable.getInstance().getSymbolFromTable(assignment.variableDef.name, true);
+        if(symbol != null){
+            generateExpression(assignment.condition.leftPart);
+            generateExpression(assignment.condition.rightPart);
+            generateInstruction(PL0InstructionType.OPR, 0, assignment.condition.operation.getValue());
+
+            PL0Instruction elseJump = generateInstruction(PL0InstructionType.JMC, 0, 0);
+            generateExpression(assignment.trueExpression);
+            PL0Instruction jumpOut = generateInstruction(PL0InstructionType.JMP, 0, 0);
+            elseJump.setParameter2(instructionCounter);
+            generateExpression(assignment.falseExpression);
+            jumpOut.setParameter2(instructionCounter);
+            generateInstruction(PL0InstructionType.STO, 0, symbol.getAddr());
+        }else {
+            throw new CompilerException("Variable "+assignment.variableDef.name+" undefined");
+        }
+    }
 
     private void generateParameters(Method method)  {
         List<Parameter> params = method.parameters;

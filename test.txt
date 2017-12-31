@@ -2,8 +2,6 @@ const int a := 2;
 
 function main() : void
 {
-    repeat{
-        ++a;
-    }until(a=5);
+    a := (a>4) ? 5: 6;
 }
 .

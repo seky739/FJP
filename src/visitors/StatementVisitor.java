@@ -3,6 +3,7 @@ package visitors;
 import expSources.ExpBaseVisitor;
 import expSources.ExpParser;
 import types.Statement;
+import types.TernaryAssignment;
 
 public class StatementVisitor extends ExpBaseVisitor<Statement> {
 
@@ -48,8 +49,9 @@ public class StatementVisitor extends ExpBaseVisitor<Statement> {
             UnaryVisitor unaryVisitor = new UnaryVisitor();
             statement = unaryVisitor.visitUnaryOperation(ctx.unaryOperation());
         }
-        else if(ctx.ternaryOperation()!=null){
-            //TODO missing
+        else if(ctx.ternaryAssignment() !=null){
+            TernaryVisitor visitor = new TernaryVisitor();
+            statement = visitor.visitTernaryAssignment(ctx.ternaryAssignment());
         }
         else if(ctx.paralelAssignment()!=null){
             //TODO missing

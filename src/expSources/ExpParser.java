@@ -28,7 +28,7 @@ public class ExpParser extends Parser {
 		RULE_variableValue = 4, RULE_method = 5, RULE_parameter = 6, RULE_returnParam = 7, 
 		RULE_statement = 8, RULE_forStatement = 9, RULE_whileStatement = 10, RULE_doWhileStatement = 11, 
 		RULE_repeatStatement = 12, RULE_ifCondition = 13, RULE_switchStatement = 14, 
-		RULE_ternaryOperation = 15, RULE_callStatement = 16, RULE_elseStatement = 17, 
+		RULE_ternaryAssignment = 15, RULE_callStatement = 16, RULE_elseStatement = 17, 
 		RULE_callParam = 18, RULE_assignment = 19, RULE_multipleAssignment = 20, 
 		RULE_paralelAssignment = 21, RULE_cas = 22, RULE_defaultcas = 23, RULE_retrn = 24, 
 		RULE_unaryOperation = 25, RULE_unaryOperator = 26, RULE_condition = 27, 
@@ -37,7 +37,7 @@ public class ExpParser extends Parser {
 		"program", "block", "variableDef", "variableConst", "variableValue", "method", 
 		"parameter", "returnParam", "statement", "forStatement", "whileStatement", 
 		"doWhileStatement", "repeatStatement", "ifCondition", "switchStatement", 
-		"ternaryOperation", "callStatement", "elseStatement", "callParam", "assignment", 
+		"ternaryAssignment", "callStatement", "elseStatement", "callParam", "assignment", 
 		"multipleAssignment", "paralelAssignment", "cas", "defaultcas", "retrn", 
 		"unaryOperation", "unaryOperator", "condition", "expression", "term", 
 		"factor"
@@ -592,8 +592,8 @@ public class ExpParser extends Parser {
 		public SwitchStatementContext switchStatement() {
 			return getRuleContext(SwitchStatementContext.class,0);
 		}
-		public TernaryOperationContext ternaryOperation() {
-			return getRuleContext(TernaryOperationContext.class,0);
+		public TernaryAssignmentContext ternaryAssignment() {
+			return getRuleContext(TernaryAssignmentContext.class,0);
 		}
 		public ParalelAssignmentContext paralelAssignment() {
 			return getRuleContext(ParalelAssignmentContext.class,0);
@@ -684,7 +684,7 @@ public class ExpParser extends Parser {
 				enterOuterAlt(_localctx, 9);
 				{
 				setState(136);
-				ternaryOperation();
+				ternaryAssignment();
 				}
 				break;
 			case 10:
@@ -1158,7 +1158,7 @@ public class ExpParser extends Parser {
 		return _localctx;
 	}
 
-	public static class TernaryOperationContext extends ParserRuleContext {
+	public static class TernaryAssignmentContext extends ParserRuleContext {
 		public TerminalNode IDENT() { return getToken(ExpParser.IDENT, 0); }
 		public ConditionContext condition() {
 			return getRuleContext(ConditionContext.class,0);
@@ -1170,20 +1170,20 @@ public class ExpParser extends Parser {
 			return getRuleContext(ExpressionContext.class,i);
 		}
 		public TerminalNode END_STATEMENT() { return getToken(ExpParser.END_STATEMENT, 0); }
-		public TernaryOperationContext(ParserRuleContext parent, int invokingState) {
+		public TernaryAssignmentContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_ternaryOperation; }
+		@Override public int getRuleIndex() { return RULE_ternaryAssignment; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ExpVisitor ) return ((ExpVisitor<? extends T>)visitor).visitTernaryOperation(this);
+			if ( visitor instanceof ExpVisitor ) return ((ExpVisitor<? extends T>)visitor).visitTernaryAssignment(this);
 			else return visitor.visitChildren(this);
 		}
 	}
 
-	public final TernaryOperationContext ternaryOperation() throws RecognitionException {
-		TernaryOperationContext _localctx = new TernaryOperationContext(_ctx, getState());
-		enterRule(_localctx, 30, RULE_ternaryOperation);
+	public final TernaryAssignmentContext ternaryAssignment() throws RecognitionException {
+		TernaryAssignmentContext _localctx = new TernaryAssignmentContext(_ctx, getState());
+		enterRule(_localctx, 30, RULE_ternaryAssignment);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{

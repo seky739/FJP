@@ -195,18 +195,6 @@ public class ExpBaseListener implements ExpListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTernaryOperation(ExpParser.TernaryOperationContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitTernaryOperation(ExpParser.TernaryOperationContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterCallStatement(ExpParser.CallStatementContext ctx) { }
 	/**
 	 * {@inheritDoc}
