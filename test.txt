@@ -2,8 +2,8 @@ const int a := 2;
 
 function main() : void
 {
-    for(a<5; ++a){
-        a:=6;
-    }
+    repeat{
+        ++a;
+    }until(a=5);
 }
 .

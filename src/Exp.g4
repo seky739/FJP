@@ -28,8 +28,8 @@ statement :  assignment
 			;
 
 forStatement: 'for' '('condition';' unaryOperation ')' '{' statement+ '}'; // predelal jsem for aby to bylo mene problematicke
-whileStatement: 'while' '('condition')' 'do' '{' statement+ '}';
-doWhileStatement: 'do' statement+ 'while' '('condition')' END_STATEMENT;
+whileStatement: 'while' '('condition')' '{' statement+ '}';
+doWhileStatement: 'do' '{' statement+ '}' 'while' '('condition')' END_STATEMENT;
 repeatStatement: 'repeat' '{' statement+ '}' 'until' '(' condition ')' END_STATEMENT;
 ifCondition: 'if' '('condition')' '{' (statement)+ '}' (elseStatement)? ;
 switchStatement: 'switch' '(' IDENT ')' '{' (cas)* defaultcas'}';
