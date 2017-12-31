@@ -47,11 +47,8 @@ public class FactorVisitor extends ExpBaseVisitor<Factor> {
             factor.expression = new ExpressionVisitor().visitExpression(ctx.expression());
         }else if(ctx.callStatement() != null){
             factor.factorType = FactorType.CALL;
-
             CallVisitor callVisitor = new CallVisitor();
-            Call call = callVisitor.visitCallStatement(ctx.callStatement());
-            //TODO not done yet
-
+            factor.call = callVisitor.visitCallStatement(ctx.callStatement());
         }
 
 

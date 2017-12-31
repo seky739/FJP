@@ -2,7 +2,7 @@ package types;
 
 import java.util.List;
 
-public class Case extends Statement {
+public class Case  {
     public int value;
     public List<Statement> caseStatement;
 

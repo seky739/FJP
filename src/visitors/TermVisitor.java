@@ -17,14 +17,15 @@ public class TermVisitor extends ExpBaseVisitor<Term> {
         Term term=new Term();
         FactorVisitor factorVisitor=new FactorVisitor();
 
-        term.factor=new ArrayList<>();
+
+        term.factors = new ArrayList<>();
         term.operations=new ArrayList<>();
 
 
-        term.factor.addAll(ctx.factor().stream().map(factorContext -> factorContext.accept(factorVisitor)).collect(toList()));
-        if(term.factor.size()>1){
+        term.factors.addAll(ctx.factor().stream().map(factorContext -> factorContext.accept(factorVisitor)).collect(toList()));
+        if(term.factors.size()>1){
             for (TerminalNode t : ctx.MULDIV()) {
-                term.operations.add(ValueOperations.getOperation(t.getText()));
+                term.operations.add(ValueOperations.getOperationByChar(t.getText()));
             }
         }
         System.out.println( Arrays.toString(term.operations.toArray()));

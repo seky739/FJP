@@ -12,9 +12,9 @@ public class IfConditionVisitor extends ExpBaseVisitor<IfCondition> {
     public IfCondition visitIfCondition(ExpParser.IfConditionContext ctx) {
         System.out.println("Visit If Conditon");
 
-        IfCondition ifCondition=new IfCondition();
-        ConditionVisitor conditionVisitor=new ConditionVisitor();
-        StatementVisitor statementVisitor=new StatementVisitor();
+        IfCondition ifCondition = new IfCondition();
+        ConditionVisitor conditionVisitor = new ConditionVisitor();
+        StatementVisitor statementVisitor = new StatementVisitor();
 
         ifCondition.condition = conditionVisitor.visitCondition(ctx.condition());
 
@@ -23,7 +23,7 @@ public class IfConditionVisitor extends ExpBaseVisitor<IfCondition> {
 
         if(ctx.elseStatement()!=null){
             System.out.println("Visit Else");
-            ifCondition.elseStatements = ctx.statement().stream().map(method->method.accept(statementVisitor)).collect(toList());
+            ifCondition.elseStatements = ctx.elseStatement().statement().stream().map(method->method.accept(statementVisitor)).collect(toList());
         }
 
         //from there visit condition

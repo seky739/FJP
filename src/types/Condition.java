@@ -8,5 +8,4 @@ public class Condition extends Expression {
 
     public Expression leftPart, rightPart;
 
-    public boolean isNegation;
 }

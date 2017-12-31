@@ -8,6 +8,7 @@ public class Factor extends Identifier{
 
     public Expression expression;
     public VariableDef vardef;
+    public Call call;
 
     public Factor(Expression expression){
         this.factorType = FactorType.EXPRESSION;
@@ -21,6 +22,7 @@ public class Factor extends Identifier{
 
     public Factor(Call call){
         this.factorType = FactorType.CALL;
+        this.call = call;
     }
 
     public Factor(){}

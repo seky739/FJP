@@ -1,6 +1,7 @@
 package types;
 
 import types.enums.FactorType;
+import types.enums.StatementType;
 import types.enums.VarType;
 
 public class VariableDef extends Identifier {

@@ -6,10 +6,10 @@ import types.enums.ValueOperations;
 import java.util.List;
 
 public class Term  {
-    public List<Factor> factor;
+    public List<Factor> factors;
     public List<ValueOperations> operations;
 
     public int getFactorCount(){
-        return factor.size();
+        return factors.size();
     }
 }

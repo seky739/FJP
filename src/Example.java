@@ -1,6 +1,7 @@
 import expSources.ExpLexer;
 import expSources.ExpParser;
 import generator.CodeGenerator;
+import generator.CompilerException;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import types.Program;
@@ -34,7 +35,11 @@ public class Example {
             // generate code
 
             CodeGenerator generator = new CodeGenerator(program);
-            generator.generateAllInstructions();
+            try {
+                generator.generateAllInstructions();
+            } catch (CompilerException e) {
+                e.printStackTrace();
+            }
 
             // table of symbols
 

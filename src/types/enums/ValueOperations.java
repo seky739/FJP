@@ -1,9 +1,20 @@
 package types.enums;
 
 public enum ValueOperations {
-    ADDITION, SUBSTRACTION, MULTIPLICATION, DIVISION, OR, AND, UNKNOWN;
+    ADDITION(2), SUBSTRACTION(3), MULTIPLICATION(4), DIVISION(5), OR(2), AND(4), UNKNOWN(8);
 
-    public static ValueOperations getOperation(String value){
+
+    private final int value;
+
+    ValueOperations(int value){
+        this.value = value;
+    }
+
+    public int getValue(){
+        return value;
+    }
+
+    public static ValueOperations getOperationByChar(String value){
         switch(value){
             case "+": return ADDITION;
             case "-": return SUBSTRACTION;

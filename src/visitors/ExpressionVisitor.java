@@ -23,18 +23,14 @@ public class ExpressionVisitor extends ExpBaseVisitor<Expression> {
 
 
         expression.terms.addAll(ctx.term().stream().map(term -> term.accept(termVisitor)).collect(toList()));
-        for (TerminalNode l:ctx.PREOPERATION()) {
-            expression.operations.add(ValueOperations.getOperation(l.getText()));
-        }
-
         if(expression.terms.size()>1){
             if(ctx.PREOPERATION() != null){
                 for (TerminalNode terminalNode : ctx.PREOPERATION()) {
-                    expression.operations.add(ValueOperations.getOperation(terminalNode.getText()));
+                    expression.operations.add(ValueOperations.getOperationByChar(terminalNode.getText()));
                 }
             }else {
                 for (TerminalNode terminalNode : ctx.BOOLOPERATION()) {
-                    expression.operations.add(ValueOperations.getOperation(terminalNode.getText()));
+                    expression.operations.add(ValueOperations.getOperationByChar(terminalNode.getText()));
                 }
             }
         }

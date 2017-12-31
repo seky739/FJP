@@ -1,17 +1,17 @@
 package types;
 
 import generator.IGenerable;
+import types.enums.StatementType;
 
 import java.util.List;
 
-public class Assignment extends Statement implements IGenerable{
+public class Assignment extends Statement {
     // multiple
     public List<String> varNames;
     public Expression expression;
 
-    @Override
-    public void generateCode() {
-
+    public Assignment(){
+        this.type = StatementType.ASSIGNMENT;
     }
 
 }
