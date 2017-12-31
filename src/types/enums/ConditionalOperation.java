@@ -1,11 +1,11 @@
 package types.enums;
 
-public enum ConditionalOperations {
+public enum ConditionalOperation {
     EQUAL(8),NOT_EQUAL(9), GREATER_THAN(12), GREATER_OR_EQUAL(11), LESS_THAN(10), LESS_OR_EQUAL(13), UNKNOWN(0);
 
     private final int value;
 
-    ConditionalOperations(int value){
+    ConditionalOperation(int value){
         this.value = value;
     }
 
@@ -14,7 +14,7 @@ public enum ConditionalOperations {
     }
 
 
-    public static ConditionalOperations getValue(String val){
+    public static ConditionalOperation getValue(String val){
         switch (val){
 
 

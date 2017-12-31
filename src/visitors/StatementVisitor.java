@@ -44,6 +44,9 @@ public class StatementVisitor extends ExpBaseVisitor<Statement> {
         else if(ctx.switchStatement()!=null){
             SwitchVisitor switchVisitor=new SwitchVisitor();
             statement = switchVisitor.visitSwitchStatement(ctx.switchStatement());
+        }else if (ctx.unaryOperation() != null){
+            UnaryVisitor unaryVisitor = new UnaryVisitor();
+            statement = unaryVisitor.visitUnaryOperation(ctx.unaryOperation());
         }
         else if(ctx.ternaryOperation()!=null){
             //TODO missing

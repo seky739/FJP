@@ -1,10 +1,10 @@
 package types;
 
-import types.enums.ConditionalOperations;
+import types.enums.ConditionalOperation;
 
 public class Condition extends Expression {
 
-    public ConditionalOperations operation;
+    public ConditionalOperation operation;
 
     public Expression leftPart, rightPart;
 

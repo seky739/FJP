@@ -1,7 +1,6 @@
 package generator;
 
 import types.*;
-import types.enums.FactorType;
 import types.enums.ValueOperations;
 
 import java.util.ArrayList;
@@ -96,8 +95,6 @@ public class CodeGenerator {
         instructions.add(newInstruction);
         instructionCounter++;
 
-        //TODO remove
-        System.out.println(newInstruction);
 
         return newInstruction;
     }
@@ -168,10 +165,14 @@ public class CodeGenerator {
             case PARALEL_ASSIGNMENT:
                 generateParalelAssignment((ParalelAssignment)statement);
                 break;
+            case UNARY:
+                generateUnaryOperator((UnaryOperation) statement);
+                break;
             case IF:
                 generateIf((IfCondition)statement);
                 break;
             case FOR:
+                generateFor((Cycle) statement);
                 break;
             case CALL:
                 generateCall((Call) statement);
@@ -180,17 +181,20 @@ public class CodeGenerator {
                 generateSwitch((Switch)statement);
                 break;
             case REPEAT_UNTIL:
+                generateRepeatUntil((Cycle) statement);
                 break;
             case DO_WHILE:
+                generateDoWhile((Cycle) statement);
                 break;
             case WHILE_DO:
-                break;
-            case EXPRESSION:
+                generateWhile((Cycle) statement);
                 break;
             case RETURN:
                 generateReturn((Return) statement);
                 break;
+            case OTHER:
             default:
+                //TODO
                 System.out.println("something different");
         }
     }
@@ -294,9 +298,74 @@ public class CodeGenerator {
         jumpOverElse.setParameter2(instructionCounter);
 
     }
+    private void generateFor(Cycle cycle) throws CompilerException{
+        int startingIndex = instructionCounter;
+        // test condition
+        generateExpression(cycle.condition.leftPart);
+        generateExpression(cycle.condition.rightPart);
+        generateInstruction(PL0InstructionType.OPR, 0, cycle.condition.operation.getValue());
+        PL0Instruction jumpOut = generateInstruction(PL0InstructionType.JMC, 0, 0);
 
-    private void generateWhile(Cycle cycle){}
-    private void generateDoWhile(Cycle cycle){}
+        // run statements
+        for (Statement statement :
+                cycle.statements) {
+            generateStatement(statement);
+        }
+
+        // increment
+        generateUnaryOperator(cycle.increment);
+
+        // jump back
+        generateInstruction(PL0InstructionType.JMP, 0, startingIndex);
+        jumpOut.setParameter2(instructionCounter);
+        
+    }
+    private void generateUnaryOperator(UnaryOperation operation){
+        TableSymbol symbol = SymbolTable.getInstance().getSymbolFromTable(operation.variable.name, true);
+        generateInstruction(PL0InstructionType.LOD, 0, symbol.getAddr());
+        generateInstruction(PL0InstructionType.LIT, 0, 1);
+        int operator = operation.increment ? ValueOperations.ADDITION.getValue() : ValueOperations.SUBSTRACTION.getValue();
+        generateInstruction(PL0InstructionType.OPR, 0, operator);
+        generateInstruction(PL0InstructionType.STO, 0, symbol.getAddr());
+    }
+
+    private void generateWhile(Cycle cycle) throws CompilerException {
+        int startingIndex = instructionCounter;
+        generateExpression(cycle.condition.leftPart);
+        generateExpression(cycle.condition.rightPart);
+        generateInstruction(PL0InstructionType.OPR, 0, cycle.condition.operation.getValue());
+        PL0Instruction jumpInstruction = generateInstruction(PL0InstructionType.JMC, 0, 0);
+        for (Statement statement:
+             cycle.statements) {
+            generateStatement(statement);
+        }
+        generateInstruction(PL0InstructionType.JMP, 0, startingIndex);
+        jumpInstruction.setParameter2(instructionCounter);
+    }
+    private void generateDoWhile(Cycle cycle) throws CompilerException{
+        int startingIndex = instructionCounter;
+        for (Statement statement:
+                cycle.statements) {
+            generateStatement(statement);
+        }
+        generateExpression(cycle.condition.leftPart);
+        generateExpression(cycle.condition.rightPart);
+        generateInstruction(PL0InstructionType.OPR, 0, cycle.condition.operation.getValue());
+        PL0Instruction jumpInstruction = generateInstruction(PL0InstructionType.JMC, 0, 0);
+        generateInstruction(PL0InstructionType.JMP, 0, startingIndex);
+        jumpInstruction.setParameter2(instructionCounter);
+    }
+    private void generateRepeatUntil(Cycle cycle) throws CompilerException{
+        int startingIndex = instructionCounter;
+        for (Statement statement:
+                cycle.statements) {
+            generateStatement(statement);
+        }
+        generateExpression(cycle.condition.leftPart);
+        generateExpression(cycle.condition.rightPart);
+        generateInstruction(PL0InstructionType.OPR, 0, cycle.condition.operation.getValue());
+        generateInstruction(PL0InstructionType.JMC, 0, startingIndex);
+    }
     private void generateReturn(Return ret){}
     private void generateSwitch(Switch sw){}
     private void generateCall(Call call){
@@ -327,8 +396,6 @@ public class CodeGenerator {
             Term firstTerm = terms.get(0);
             // push 1 term to stack
             generateTerm(firstTerm);
-
-            System.out.println(terms.size()+" = "+expression.operations.size());
 
             for (int i = 0; i < expression.operations.size(); i++) {
                 Term term = terms.get(i+1);

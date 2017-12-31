@@ -47,7 +47,7 @@ cas : 'case' NUMBER ':' (statement)* 'break'END_STATEMENT;
 defaultcas: 'default' ':' (statement)* 'break'END_STATEMENT;
 
 retrn : 'return' IDENT? END_STATEMENT; // return something; / return;
-unaryOperation: IDENT unaryOperator; //TODO neni
+unaryOperation: unaryOperator IDENT; //TODO neni
 unaryOperator: '++' | '--'; //TODO neni
 
 condition : expression COMPARATOR expression;
