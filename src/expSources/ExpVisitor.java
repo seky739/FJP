@@ -137,11 +137,11 @@ public interface ExpVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitMultipleAssignment(ExpParser.MultipleAssignmentContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ExpParser#paralelAssignment}.
+	 * Visit a parse tree produced by {@link ExpParser#parallelAssignment}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitParalelAssignment(ExpParser.ParalelAssignmentContext ctx);
+	T visitParallelAssignment(ExpParser.ParallelAssignmentContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ExpParser#cas}.
 	 * @param ctx the parse tree

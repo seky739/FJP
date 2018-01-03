@@ -164,7 +164,7 @@ public class ExpBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements Ex
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitParalelAssignment(ExpParser.ParalelAssignmentContext ctx) { return visitChildren(ctx); }
+	@Override public T visitParallelAssignment(ExpParser.ParallelAssignmentContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

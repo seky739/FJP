@@ -13,7 +13,6 @@ public class ForVisitor extends ExpBaseVisitor<Cycle> {
 
     @Override
     public Cycle visitForStatement(ExpParser.ForStatementContext ctx) {
-        System.out.println("Visit For");
         Cycle forCycle=new Cycle();
         ConditionVisitor conditionVisitor=new ConditionVisitor();
         StatementVisitor statementVisitor=new StatementVisitor();

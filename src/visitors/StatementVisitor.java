@@ -9,8 +9,6 @@ public class StatementVisitor extends ExpBaseVisitor<Statement> {
 
     @Override
     public Statement visitStatement(ExpParser.StatementContext ctx) {
-        System.out.println("Visit statement");
-
         //System.out.println(ctx.getText());
         Statement statement = null;
 
@@ -53,15 +51,13 @@ public class StatementVisitor extends ExpBaseVisitor<Statement> {
             TernaryVisitor visitor = new TernaryVisitor();
             statement = visitor.visitTernaryAssignment(ctx.ternaryAssignment());
         }
-        else if(ctx.paralelAssignment()!=null){
-            //TODO missing
+        else if(ctx.parallelAssignment()!=null){
+            ParallelAssignmentVisitor visitor = new ParallelAssignmentVisitor();
+            statement = visitor.visitParallelAssignment(ctx.parallelAssignment());
         }
         else if(ctx.retrn()!=null){
             ReturnVisitor returnVisitor=new ReturnVisitor();
             returnVisitor.visitRetrn(ctx.retrn());
-        }
-        else if(ctx.unaryOperation()!=null){
-            //TODO missing
         }
 
         return statement;

@@ -9,7 +9,6 @@ public class ConditionVisitor extends ExpBaseVisitor<Condition> {
 
     @Override
     public Condition visitCondition(ExpParser.ConditionContext ctx) {
-        System.out.println("Visit Condition");
         ExpressionVisitor expressionVisitor = new ExpressionVisitor();
         Condition condition = new Condition();
         condition.operation= ConditionalOperation.getValue(ctx.COMPARATOR().getText());

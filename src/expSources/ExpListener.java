@@ -188,16 +188,6 @@ public interface ExpListener extends ParseTreeListener {
 	 */
 	void exitMultipleAssignment(ExpParser.MultipleAssignmentContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link ExpParser#paralelAssignment}.
-	 * @param ctx the parse tree
-	 */
-	void enterParalelAssignment(ExpParser.ParalelAssignmentContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ExpParser#paralelAssignment}.
-	 * @param ctx the parse tree
-	 */
-	void exitParalelAssignment(ExpParser.ParalelAssignmentContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link ExpParser#cas}.
 	 * @param ctx the parse tree
 	 */

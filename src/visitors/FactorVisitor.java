@@ -13,9 +13,7 @@ public class FactorVisitor extends ExpBaseVisitor<Factor> {
 
     @Override
     public Factor visitFactor(ExpParser.FactorContext ctx) {
-        System.out.println("Visit Factor  "+ctx.getText());
         Factor factor=new Factor();
-
 
         // ident
         if (ctx.IDENT()!=null){

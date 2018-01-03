@@ -11,7 +11,6 @@ public class RepeatVisitor extends ExpBaseVisitor<Cycle> {
 
     @Override
     public Cycle visitRepeatStatement(ExpParser.RepeatStatementContext ctx) {
-        System.out.println("Visit Repeat until");
         StatementVisitor statementVisitor=new StatementVisitor();
         ConditionVisitor conditionVisitor=new ConditionVisitor();
         Cycle repeat=new Cycle();

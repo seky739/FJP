@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 public class WhileVisitor extends ExpBaseVisitor<Cycle> {
     @Override
     public Cycle visitWhileStatement(ExpParser.WhileStatementContext ctx) {
-        System.out.println("Visit While");
         Cycle cycle = new Cycle();
         cycle.type = StatementType.WHILE_DO;
 

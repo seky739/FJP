@@ -13,7 +13,6 @@ import static java.util.stream.Collectors.toList;
 public class CallVisitor extends ExpBaseVisitor<Call> {
     @Override
     public Call visitCallStatement(ExpParser.CallStatementContext ctx) {
-        System.out.println("Visit Call");
         Call call=new Call();
         call.functionName=ctx.IDENT().toString();
         call.parameters = new ArrayList<>();

@@ -1,7 +1,13 @@
-const int a := 2;
-
+int a := true;
+int b := 3;
 function main() : void
 {
-    a := (a>4) ? 5: 6;
+    switch(a){
+     case 1:
+        b:=1;
+        b := 2;
+     case 2: b := 3;
+     default: b := 5;
+    }
 }
 .

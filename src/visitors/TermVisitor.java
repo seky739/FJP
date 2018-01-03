@@ -13,7 +13,6 @@ import static java.util.stream.Collectors.toList;
 
 public class TermVisitor extends ExpBaseVisitor<Term> {
     public Term visitTerm(ExpParser.TermContext ctx) {
-        System.out.println("Visit Term  " +ctx.getText());
         Term term=new Term();
         FactorVisitor factorVisitor=new FactorVisitor();
 

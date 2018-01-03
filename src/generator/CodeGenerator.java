@@ -2,6 +2,7 @@ package generator;
 
 import types.*;
 import types.enums.ValueOperations;
+import types.enums.VarType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,35 +101,30 @@ public class CodeGenerator {
     }
 
 
-    private void generateVariableDefs(List<VariableDef> variableDefs, int startAddress, int level) {
+    private void generateVariableDefs(List<VariableDef> variableDefs, int startAddress, int level) throws CompilerException{
         if(variableDefs.size() > 0){
             generateInstruction(PL0InstructionType.INT, 0, variableDefs.size());
             for (VariableDef var :
                     variableDefs) {
-                TableSymbol symbol = new TableSymbol(var, startAddress, level);
+                TableSymbol symbol = new TableSymbol(var, startAddress, level, var.isVarConstant, var.type);
                 if(!SymbolTable.getInstance().addSymbol(symbol)){
-                    //TODO symbol name already existed
-                    break;
+                    throw new CompilerException(CompilerException.ERR_DUPLICATED_VARIABLE);
                 }
-                generateInstruction(PL0InstructionType.LIT, 0, var.value);
+                int value = var.value;
+                // if typ is boolean then non binary values will have to change to 0 or 1
+                if(var.type == VarType.BOOL){
+                    value = value == 0 ? 0 : 1;
+                }
+                generateInstruction(PL0InstructionType.LIT, 0, value);
                 generateInstruction(PL0InstructionType.STO, 0, symbol.getAddr());
                 startAddress++;
             }
         }
     }
 
-    private void generateVariableDef(VariableDef variableDef, int startAddress, int level){
-        TableSymbol newSymbol = new TableSymbol(variableDef, startAddress, level);
-        if(SymbolTable.getInstance().addSymbol(newSymbol)){
-            generateInstruction(PL0InstructionType.INT, 0, 1); // increase stack
-            generateInstruction(PL0InstructionType.LIT, 0, variableDef.value); // add value to stack top
-            generateInstruction(PL0InstructionType.STO, 0, newSymbol.getAddr()); // now add value from stack to address
-        }
-    }
-
     private TableSymbol generateMethod(Method method, int addr) throws CompilerException{
         final int LEVEL = 1;
-        TableSymbol result = new TableSymbol(method, this.instructionCounter, LEVEL);
+        TableSymbol result = new TableSymbol(method, this.instructionCounter, LEVEL, false, null);
         int lastTableSize = SymbolTable.getInstance().getSize();
         generateParameters(method);
         this.stackTop += addr + (SymbolTable.getInstance().getSize() - lastTableSize);
@@ -163,7 +159,7 @@ public class CodeGenerator {
                 generateAssignment((Assignment) statement);
                 break;
             case PARALEL_ASSIGNMENT:
-                generateParalelAssignment((ParalelAssignment)statement);
+                generateParallelAssignment((ParallelAssignment)statement);
                 break;
             case UNARY:
                 generateUnaryOperator((UnaryOperation) statement);
@@ -204,7 +200,8 @@ public class CodeGenerator {
 
     private void generateTernaryAssignment(TernaryAssignment assignment) throws CompilerException{
         TableSymbol symbol = SymbolTable.getInstance().getSymbolFromTable(assignment.variableDef.name, true);
-        if(symbol != null){
+        if(symbol != null || symbol.isConstant()){
+
             generateExpression(assignment.condition.leftPart);
             generateExpression(assignment.condition.rightPart);
             generateInstruction(PL0InstructionType.OPR, 0, assignment.condition.operation.getValue());
@@ -217,7 +214,11 @@ public class CodeGenerator {
             jumpOut.setParameter2(instructionCounter);
             generateInstruction(PL0InstructionType.STO, 0, symbol.getAddr());
         }else {
-            throw new CompilerException("Variable "+assignment.variableDef.name+" undefined");
+            if(symbol == null){
+                throw new CompilerException("Variable "+assignment.variableDef.name+" undefined");
+            }else {
+                throw new CompilerException("Constants are immutable");
+            }
         }
     }
 
@@ -245,7 +246,7 @@ public class CodeGenerator {
 
         // add params to table
         for (Parameter p : params) {
-            TableSymbol newSymbol = new TableSymbol(p, actualAddr, 1);
+            TableSymbol newSymbol = new TableSymbol(p, actualAddr, 1, false, null); //TODO check
             SymbolTable.getInstance().addSymbol(newSymbol);
             generateInstruction(PL0InstructionType.LOD, 1, actualAddr);
             actualAddr++;
@@ -254,6 +255,21 @@ public class CodeGenerator {
 
     // DONE
     private void generateAssignment(Assignment assignment) throws CompilerException {
+
+        List<TableSymbol> symbolList = new ArrayList<>();
+        for (String var :
+                assignment.varNames) {
+            TableSymbol symbol = SymbolTable.getInstance().getSymbolFromTable(var, true);
+            if(symbol == null || symbol.isConstant()){
+                if(symbol == null){
+                    throw new CompilerException(CompilerException.ERR_UNDEFINED_VARIABLE);
+                }else {
+                    throw new CompilerException(CompilerException.ERR_IMMUTABLE_CONSTANTS);
+                }
+            }
+            symbolList.add(symbol);
+        }
+
         Statement statement = assignment.expression;
         int value = 0;
         if(statement instanceof Expression){
@@ -261,7 +277,7 @@ public class CodeGenerator {
         }else if(statement instanceof Call){
             generateCall((Call) statement);
         }else {
-            //TODO error
+            throw new CompilerException(CompilerException.ERR_UNKNOWN);
         }
         // now the value is in the top of stack -> store it
         // first var
@@ -269,20 +285,37 @@ public class CodeGenerator {
         generateInstruction(PL0InstructionType.STO, 0, firstSymbol.getAddr());
 
         // other vars
-        for (int i = 1; i < assignment.varNames.size(); i++) {
-            // add value to top
+        for (int i = 1; i < symbolList.size(); i++) {
             generateInstruction(PL0InstructionType.LIT, 0, value);
-            TableSymbol varSymbol = SymbolTable.getInstance().getSymbolFromTable(assignment.varNames.get(i), true);
-            if(varSymbol==null){
-                //TODO error - undefined variable
-            }
-            generateInstruction(PL0InstructionType.STO, 0, varSymbol.getAddr());
+            generateInstruction(PL0InstructionType.STO, 0, symbolList.get(i).getAddr());
         }
     }
 
-    private void generateParalelAssignment(ParalelAssignment assignment){
+    private void generateParallelAssignment(ParallelAssignment assignment) throws CompilerException{
         // only constants
-        //if(assignment.varNames.size() == assignment.)
+        if(assignment != null){
+            for (int i=0; i< assignment.variables.size(); i++) {
+                String var = assignment.variables.get(i);
+                TableSymbol symbol = SymbolTable.getInstance().getSymbolFromTable(var, true);
+                if(symbol != null){
+                    //TODO check type (boolean/number)
+                    if(!symbol.isConstant()){
+                        int value = assignment.values.get(i);
+                        if(symbol.getType() == VarType.BOOL){
+                            value = assignment.values.get(i) == 0 ? 0 : 1;
+                        }
+                        generateInstruction(PL0InstructionType.LIT, 0, value);
+                        generateInstruction(PL0InstructionType.STO, 0, symbol.getAddr());
+                    }else {
+                        throw new CompilerException("Constants are immutable");
+                    }
+                }else {
+                    throw new CompilerException("Undefined variable: "+ var);
+                }
+            }
+        }else {
+            throw new CompilerException("Number of assignment variables and values do not match");
+        }
     }
     private void generateIf(IfCondition ifCondition) throws CompilerException {
         Expression leftExp = ifCondition.condition.leftPart;
@@ -388,7 +421,57 @@ public class CodeGenerator {
         generateInstruction(PL0InstructionType.JMC, 0, startingIndex);
     }
     private void generateReturn(Return ret){}
-    private void generateSwitch(Switch sw){}
+    private void generateSwitch(Switch sw) throws CompilerException{
+        TableSymbol symbol = SymbolTable.getInstance().getSymbolFromTable(sw.variableDef.name, true);
+        if(symbol != null && symbol.getType() == VarType.NUMBER){
+            // check if all cases are different
+            for (int i = 0; i < sw.cases.size(); i++) {
+                for (int j = i+1; j < sw.cases.size(); j++) {
+                    if(sw.cases.get(i).value == sw.cases.get(j).value){
+                        throw new CompilerException(CompilerException.ERR_DUPLICATED_CASES);
+                    }
+                }
+            }
+
+            List<PL0Instruction> jumpNextInstructions = new ArrayList<>();
+            List<PL0Instruction> jumpOutInstructions = new ArrayList<>();
+
+            generateInstruction(PL0InstructionType.LOD, 0, symbol.getAddr());
+            for (Case cs :
+                    sw.cases) {
+                if(jumpNextInstructions.size()>0){
+                    jumpNextInstructions.get(jumpNextInstructions.size()-1).setParameter2(instructionCounter);
+                }
+                generateInstruction(PL0InstructionType.LIT, 0, cs.value);
+                PL0Instruction jump = generateInstruction(PL0InstructionType.JMC, 0, 0);
+                jumpNextInstructions.add(jump);
+                for (Statement statement:
+                     cs.statements) {
+                    generateStatement(statement);
+                }
+                jumpOutInstructions.add(generateInstruction(PL0InstructionType.JMP, 0, 0));
+
+            }
+            if(jumpNextInstructions.size()>0){
+                jumpNextInstructions.get(jumpNextInstructions.size()-1).setParameter2(instructionCounter);
+            }
+            for (Statement statement :
+                    sw.defaultCase.statements) {
+                generateStatement(statement);
+            }
+
+            for (PL0Instruction instruction: jumpOutInstructions) {
+                instruction.setParameter2(instructionCounter);
+            }
+
+        }else {
+            if(symbol == null){
+                throw new CompilerException(CompilerException.ERR_UNDEFINED_VARIABLE);
+            }else {
+                throw new CompilerException(CompilerException.ERR_WRONG_TYPE);
+            }
+        }
+    }
     private void generateCall(Call call){
 
         TableSymbol methodSymbol = SymbolTable.getInstance().getSymbolFromTable(call.name, false);
@@ -431,6 +514,7 @@ public class CodeGenerator {
             }
         }
     }
+
 
     private void generateTerm(Term term) throws CompilerException{
         List<Factor> factors = term.factors;

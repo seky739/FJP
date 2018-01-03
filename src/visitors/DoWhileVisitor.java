@@ -10,8 +10,6 @@ import static java.util.stream.Collectors.toList;
 public class DoWhileVisitor extends ExpBaseVisitor<Cycle> {
     @Override
     public Cycle visitDoWhileStatement(ExpParser.DoWhileStatementContext ctx) {
-        System.out.println("Visit Do While");
-
         Cycle doWhile =new Cycle();
         StatementVisitor statementVisitor=new StatementVisitor();
         ConditionVisitor conditionVisitor=new ConditionVisitor();

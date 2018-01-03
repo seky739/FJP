@@ -14,8 +14,15 @@ public class CasVisitor extends ExpBaseVisitor<Case> {
         StatementVisitor statementVisitor=new StatementVisitor();
         Case cas=new Case();
         cas.value=Integer.parseInt(ctx.NUMBER().getText());
-        cas.caseStatement = ctx.statement().stream().map(statementContext -> statementContext.accept(statementVisitor)).collect(toList());
+        cas.statements = ctx.statement().stream().map(statementContext -> statementContext.accept(statementVisitor)).collect(toList());
+        return cas;
+    }
 
+    @Override
+    public Case visitDefaultcas(ExpParser.DefaultcasContext ctx) {
+        StatementVisitor statementVisitor=new StatementVisitor();
+        Case cas=new Case();
+        cas.statements = ctx.statement().stream().map(statementContext -> statementContext.accept(statementVisitor)).collect(toList());
         return cas;
     }
 }

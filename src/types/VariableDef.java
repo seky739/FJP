@@ -7,6 +7,7 @@ import types.enums.VarType;
 public class VariableDef extends Identifier {
     public VarType type;
     public boolean isConstant;
+    public boolean isVarConstant;
     public int value; // for bool value, 0 = false, otherwise = true
     public boolean initialized; // assigned?
     public boolean negative;
@@ -16,6 +17,7 @@ public class VariableDef extends Identifier {
         value = 0;
         initialized = false;
         negative = false;
+        isVarConstant = false;
     }
 
     public String toString(){

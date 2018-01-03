@@ -4,11 +4,11 @@ import types.enums.StatementType;
 
 import java.util.List;
 
-public class ParalelAssignment extends Assignment{
-    public List<VariableDef> variables;
+public class ParallelAssignment extends Statement{
+    public List<String> variables;
     public List<Integer> values;
 
-    public ParalelAssignment(){
+    public ParallelAssignment(){
         this.type = StatementType.PARALEL_ASSIGNMENT;
     }
 }

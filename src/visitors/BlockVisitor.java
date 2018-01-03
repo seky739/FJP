@@ -14,7 +14,6 @@ public class BlockVisitor extends ExpBaseVisitor<Block> {
 
     @Override
     public Block visitBlock(ExpParser.BlockContext ctx) {
-        System.out.println("Visit block");
         Block block = new Block();
         VariableVisitor variableVisitor = new VariableVisitor();
         List<VariableDef> variableDefs = ctx.variableDef().

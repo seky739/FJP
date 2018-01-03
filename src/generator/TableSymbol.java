@@ -3,16 +3,21 @@ package generator;
 import types.Identifier;
 import types.Method;
 import types.VariableDef;
+import types.enums.VarType;
 
 public class TableSymbol {
     private Identifier identifier;
     private int addr;
     private int level;
+    private boolean isConstant;
+    private VarType type;
 
-    public TableSymbol(Identifier identifier, int addr, int level){
+    public TableSymbol(Identifier identifier, int addr, int level, boolean isConstant, VarType type){
         this.identifier = identifier;
         this.addr = addr;
         this.level = level;
+        this.isConstant = isConstant;
+        this.type = type;
     }
 
     public boolean isVariable(){
@@ -30,6 +35,10 @@ public class TableSymbol {
     public boolean isLocalVar(){
         return isVariable() && this.level > 1;
     }
+
+    public boolean isConstant(){return isVariable() && isConstant; }
+
+    public VarType getType(){return type;}
 
 
 

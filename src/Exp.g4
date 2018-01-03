@@ -22,7 +22,7 @@ statement :  assignment
 			  | forStatement
 			  | switchStatement
 			  | ternaryAssignment
-			  | paralelAssignment
+			  | parallelAssignment
 			  | retrn
 			  | unaryOperation END_STATEMENT
 			;
@@ -32,7 +32,7 @@ whileStatement: 'while' '('condition')' '{' statement+ '}';
 doWhileStatement: 'do' '{' statement+ '}' 'while' '('condition')' END_STATEMENT;
 repeatStatement: 'repeat' '{' statement+ '}' 'until' '(' condition ')' END_STATEMENT;
 ifCondition: 'if' '('condition')' '{' (statement)+ '}' (elseStatement)? ;
-switchStatement: 'switch' '(' IDENT ')' '{' (cas)* defaultcas'}';
+switchStatement: 'switch' '(' IDENT ')' '{' (cas)+ defaultcas'}';
 ternaryAssignment: IDENT ':=' '(' condition ')' '?' expression ':' expression END_STATEMENT;
 callStatement: 'call' IDENT '(' callParam? ')';
 elseStatement: 'else' '{' (statement)+ '}';
@@ -40,11 +40,11 @@ elseStatement: 'else' '{' (statement)+ '}';
 callParam: (IDENT (',' IDENT)*);
 assignment: IDENT multipleAssignment* ASSIGN (expression|callStatement) END_STATEMENT;
 multipleAssignment  : ASSIGN IDENT;
-paralelAssignment: '{' IDENT (',' IDENT)+ '}' ASSIGN '{' (variableValue) (',' (variableValue))+ '}' END_STATEMENT; //TODO neni
+parallelAssignment: '{' IDENT (',' IDENT)+ '}' ASSIGN '{' (variableValue) (',' (variableValue))+ '}' END_STATEMENT; //TODO neni
 
 
-cas : 'case' NUMBER ':' (statement)* 'break'END_STATEMENT;
-defaultcas: 'default' ':' (statement)* 'break'END_STATEMENT;
+cas : 'case' NUMBER ':' statement*;
+defaultcas: 'default' ':' statement*;
 
 retrn : 'return' IDENT? END_STATEMENT; // return something; / return;
 unaryOperation: unaryOperator IDENT; //TODO neni

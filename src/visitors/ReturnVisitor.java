@@ -14,7 +14,6 @@ public class ReturnVisitor extends ExpBaseVisitor<Return> {
         }else {
             retrn.value.initialized=false;
         }
-        System.out.println("Visit Return");
         return retrn;
     }
 }

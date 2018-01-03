@@ -14,7 +14,6 @@ public class ProgramVisitor extends ExpBaseVisitor<Program> {
 
     @Override
     public Program visitProgram(ExpParser.ProgramContext ctx) {
-        System.out.println("Visit program");
         BlockVisitor blockVisitor = new BlockVisitor();
         Block block = blockVisitor.visitBlock(ctx.block()); // protoze je jen 1 block v 'program', tak se zjiskava takto
 

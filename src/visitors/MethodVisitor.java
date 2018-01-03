@@ -18,7 +18,6 @@ public class MethodVisitor extends ExpBaseVisitor<Method> {
     @Override
     public Method visitMethod(ExpParser.MethodContext ctx) {
         Method method = new Method(ctx.IDENT().getText()); // nazev metody je dulezity pro urceni main metody
-        System.out.println("Visit method: "+method.name);
 
         List<Parameter> parameters = ctx.parameter().stream().map(param->getParameter(param)).collect(toList());
         method.parameters = parameters;
@@ -38,7 +37,6 @@ public class MethodVisitor extends ExpBaseVisitor<Method> {
 
 
     private Parameter getParameter(ExpParser.ParameterContext ctx) {
-        System.out.println("Getting parameter: "+ ctx.IDENT().getText());
         Parameter parameter = new Parameter();
         parameter.type = VarType.getType(ctx.TYPE().getText());
         parameter.name = ctx.IDENT().getText();
