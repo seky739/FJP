@@ -1,15 +1,24 @@
 int a := 31;
 int b := 21;
-int c := 22;
+
+function fce2(int x): int :
+{
+	x:=6;
+	return x;
+}
 
 function fce1(int x, int y, int z): int:
 {
+    y:= 5;
     return y;
 }
+
+
 function main() : void :
 {
-    a:=1;
-    a:=call fce1(a, b, a);
+    a:=1 +call fce1(a, b, a) + call fce2(a);
+
+    
     return;
 }
 .

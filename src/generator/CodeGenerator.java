@@ -10,10 +10,12 @@ import java.util.List;
 public class CodeGenerator {
     public static final int STACK_OFFSET = 3;
     private static final int STACK_BASE = 1;
+    private static final int MAX_PARAM_COUNT = 3;
     private Program root;
     private int instructionCounter;
     private int stackTop;
     private int returnAddress;
+    private int paramAddress;
 
 
     private List<PL0Instruction> instructions;
@@ -41,9 +43,14 @@ public class CodeGenerator {
         // register for base, ...
         generateInstruction(PL0InstructionType.INT, 0, STACK_OFFSET);
 
-        // 0) temp register for method returned value
+        // 0) temp register for method returned value + starting address for parameters
         returnAddress = stackTop;
         generateInstruction(PL0InstructionType.LIT, 0, 0);
+        paramAddress = stackTop;
+        for (int i = 0; i < MAX_PARAM_COUNT; i++) {
+            generateInstruction(PL0InstructionType.LIT, 0, 0);
+        }
+
 
         // 1) variableDefs
         generateVariableDefs(variableDefs, this.stackTop, actualLevel);
@@ -122,24 +129,25 @@ public class CodeGenerator {
                     value = value == 0 ? 0 : 1;
                 }
                 generateInstruction(PL0InstructionType.LIT, 0, value);
-                generateInstruction(PL0InstructionType.STO, 0, symbol.getAddr());
+                generateInstruction(PL0InstructionType.STO, level, symbol.getAddr());
                 startAddress++;
             }
         }
     }
 
     private TableSymbol generateMethod(Method method, int addr, boolean isMainMethod) throws CompilerException{
-        final int LEVEL = 1;
-        TableSymbol result = new TableSymbol(method, this.instructionCounter, LEVEL);
+        int level = isMainMethod ? 0 : 1;
+        TableSymbol result = new TableSymbol(method, this.instructionCounter, level);
 
         if(result != null){
             if(!isMainMethod){
                 List<Parameter> params = method.parameters;
                 // add params to table
-                int paramAddress = stackTop;
                 generateInstruction(PL0InstructionType.INT, 0, STACK_OFFSET);
+                int tempAddress = paramAddress;
+
                 for (Parameter p : params) {
-                    TableSymbol newSymbol = new TableSymbol(p, paramAddress++, 1); //TODO check
+                    TableSymbol newSymbol = new TableSymbol(p, tempAddress++, 1); //TODO check
                     SymbolTable.getInstance().addSymbol(newSymbol);
                     generateInstruction(PL0InstructionType.LOD, 1, newSymbol.getAddr());
                 }
@@ -148,18 +156,18 @@ public class CodeGenerator {
 
 
             // local variableDefs
-            generateVariableDefs(method.localVars, this.stackTop, LEVEL);
+            generateVariableDefs(method.localVars, this.stackTop, level);
 
             // statements
             for (Statement s :
                     method.statements) {
-                generateStatement(s);
+                generateStatement(s, level);
             }
 
             generateReturn(method.rturn, method.returnType);
             // remove them from table
-            SymbolTable.getInstance().removeMultipleSymbols(method.localVars, LEVEL);
-            SymbolTable.getInstance().removeMultipleParameters(method.parameters, LEVEL);
+            SymbolTable.getInstance().removeMultipleSymbols(method.localVars, level);
+            SymbolTable.getInstance().removeMultipleParameters(method.parameters, level);
             generateInstruction(PL0InstructionType.RET, 0, 0);
 
 
@@ -167,40 +175,40 @@ public class CodeGenerator {
         return result;
     }
 
-    private void generateStatement(Statement statement) throws CompilerException{
+    private void generateStatement(Statement statement, int level) throws CompilerException{
         switch (statement.type){
             case ASSIGNMENT:
-                generateAssignment((Assignment) statement);
+                generateAssignment((Assignment) statement, level);
                 break;
             case PARALEL_ASSIGNMENT:
-                generateParallelAssignment((ParallelAssignment)statement);
+                generateParallelAssignment((ParallelAssignment)statement, level);
                 break;
             case UNARY:
-                generateUnaryOperator((UnaryOperation) statement);
+                generateUnaryOperator((UnaryOperation) statement, level);
                 break;
             case IF:
-                generateIf((IfCondition)statement);
+                generateIf((IfCondition)statement, level);
                 break;
             case FOR:
-                generateFor((Cycle) statement);
+                generateFor((Cycle) statement, level);
                 break;
             case CALL:
-                generateCall((Call) statement, false);
+                generateCall((Call) statement, false, level);
                 break;
             case SWITCH:
-                generateSwitch((Switch)statement);
+                generateSwitch((Switch)statement, level);
                 break;
             case REPEAT_UNTIL:
-                generateRepeatUntil((Cycle) statement);
+                generateRepeatUntil((Cycle) statement, level);
                 break;
             case DO_WHILE:
-                generateDoWhile((Cycle) statement);
+                generateDoWhile((Cycle) statement, level);
                 break;
             case WHILE_DO:
-                generateWhile((Cycle) statement);
+                generateWhile((Cycle) statement, level);
                 break;
             case TERNARY:
-                generateTernaryAssignment((TernaryAssignment) statement);
+                generateTernaryAssignment((TernaryAssignment) statement, level);
                 break;
             case OTHER:
             default:
@@ -209,21 +217,21 @@ public class CodeGenerator {
         }
     }
 
-    private void generateTernaryAssignment(TernaryAssignment assignment) throws CompilerException{
+    private void generateTernaryAssignment(TernaryAssignment assignment, int level) throws CompilerException{
         TableSymbol symbol = SymbolTable.getInstance().getSymbolFromTable(assignment.variableDef.name, true);
         if(symbol != null || symbol.isConstant()){
 
-            generateExpression(assignment.condition.leftPart);
-            generateExpression(assignment.condition.rightPart);
+            generateExpression(assignment.condition.leftPart, level);
+            generateExpression(assignment.condition.rightPart, level);
             generateInstruction(PL0InstructionType.OPR, 0, assignment.condition.operation.getValue());
 
             PL0Instruction elseJump = generateInstruction(PL0InstructionType.JMC, 0, 0);
-            generateExpression(assignment.trueExpression);
+            generateExpression(assignment.trueExpression, level);
             PL0Instruction jumpOut = generateInstruction(PL0InstructionType.JMP, 0, 0);
             elseJump.setParameter2(instructionCounter);
-            generateExpression(assignment.falseExpression);
+            generateExpression(assignment.falseExpression, level);
             jumpOut.setParameter2(instructionCounter);
-            generateInstruction(PL0InstructionType.STO, 0, symbol.getAddr());
+            generateInstruction(PL0InstructionType.STO, level, symbol.getAddr());
         }else {
             if(symbol == null){
                 throw new CompilerException("Variable "+assignment.variableDef.name+" undefined");
@@ -233,19 +241,21 @@ public class CodeGenerator {
         }
     }
 
-    private void generateCall(Call call, boolean withReturn) throws CompilerException {
+    private void generateCall(Call call, boolean withReturn, int level) throws CompilerException {
         TableSymbol methodSymbol = SymbolTable.getInstance().getSymbolFromTable(call.functionName, false);
 
         if(methodSymbol != null && call.parameters.size() == methodSymbol.getParamCount()){
             List<String> parameters = call.parameters;
+            int tmpAddress = paramAddress;
             for (String parameter : parameters) {
                 TableSymbol symbol = SymbolTable.getInstance().getSymbolFromTable(parameter, true);
-                generateInstruction(PL0InstructionType.LOD, 0, symbol.getAddr());
+                generateInstruction(PL0InstructionType.LOD, level, symbol.getAddr());
+                generateInstruction(PL0InstructionType.STO, level, tmpAddress++);
             }
 
             generateInstruction(PL0InstructionType.CAL, 0, methodSymbol.getAddr());
             if(withReturn){
-                generateInstruction(PL0InstructionType.LOD, 1, returnAddress);
+                generateInstruction(PL0InstructionType.LOD, level, returnAddress);
             }
 
         }else{
@@ -258,7 +268,7 @@ public class CodeGenerator {
     }
 
     // DONE
-    private void generateAssignment(Assignment assignment) throws CompilerException {
+    private void generateAssignment(Assignment assignment, int level) throws CompilerException {
 
         List<TableSymbol> symbolList = new ArrayList<>();
         for (String var :
@@ -277,25 +287,25 @@ public class CodeGenerator {
         Statement statement = assignment.expression;
         int value = 0;
         if(statement instanceof Expression){
-            generateExpression((Expression) statement);
+            generateExpression((Expression) statement, level);
         }else if(statement instanceof Call){
-            generateCall((Call) statement, true);
+            generateCall((Call) statement, true, level);
         }else {
             throw new CompilerException(CompilerException.ERR_UNKNOWN);
         }
         // now the value is in the top of stack -> store it
         // first var
         TableSymbol firstSymbol = SymbolTable.getInstance().getSymbolFromTable(assignment.varNames.get(0), true);
-        generateInstruction(PL0InstructionType.STO, 0, firstSymbol.getAddr());
+        generateInstruction(PL0InstructionType.STO, level, firstSymbol.getAddr());
 
         // other vars
         for (int i = 1; i < symbolList.size(); i++) {
             generateInstruction(PL0InstructionType.LIT, 0, value);
-            generateInstruction(PL0InstructionType.STO, 0, symbolList.get(i).getAddr());
+            generateInstruction(PL0InstructionType.STO, level, symbolList.get(i).getAddr());
         }
     }
 
-    private void generateParallelAssignment(ParallelAssignment assignment) throws CompilerException{
+    private void generateParallelAssignment(ParallelAssignment assignment, int level) throws CompilerException{
         // only constants
         if(assignment != null){
             for (int i=0; i< assignment.variables.size(); i++) {
@@ -309,7 +319,7 @@ public class CodeGenerator {
                             value = assignment.values.get(i) == 0 ? 0 : 1;
                         }
                         generateInstruction(PL0InstructionType.LIT, 0, value);
-                        generateInstruction(PL0InstructionType.STO, 0, symbol.getAddr());
+                        generateInstruction(PL0InstructionType.STO, level, symbol.getAddr());
                     }else {
                         throw new CompilerException("Constants are immutable");
                     }
@@ -321,12 +331,12 @@ public class CodeGenerator {
             throw new CompilerException("Number of assignment variables and values do not match");
         }
     }
-    private void generateIf(IfCondition ifCondition) throws CompilerException {
+    private void generateIf(IfCondition ifCondition, int level) throws CompilerException {
         Expression leftExp = ifCondition.condition.leftPart;
         Expression rightExp = ifCondition.condition.rightPart;
 
-        generateExpression(leftExp);
-        generateExpression(rightExp);
+        generateExpression(leftExp, level);
+        generateExpression(rightExp, level);
 
         int operator = ifCondition.condition.operation.getValue();
         if(operator != 0){
@@ -341,7 +351,7 @@ public class CodeGenerator {
         // generate statement inside if block
         for (Statement statement :
                 ifCondition.statements) {
-            generateStatement(statement);
+            generateStatement(statement, level);
         }
         // now jump over else if exist
         if(ifCondition.elseStatements.size()>0){
@@ -351,76 +361,76 @@ public class CodeGenerator {
         // generate statement inside else block
         for (Statement statement :
                 ifCondition.elseStatements) {
-            generateStatement(statement);
+            generateStatement(statement, level);
         }
         jumpOverElse.setParameter2(instructionCounter);
 
     }
-    private void generateFor(Cycle cycle) throws CompilerException{
+    private void generateFor(Cycle cycle, int level) throws CompilerException{
         int startingIndex = instructionCounter;
         // test condition
-        generateExpression(cycle.condition.leftPart);
-        generateExpression(cycle.condition.rightPart);
+        generateExpression(cycle.condition.leftPart, level);
+        generateExpression(cycle.condition.rightPart, level);
         generateInstruction(PL0InstructionType.OPR, 0, cycle.condition.operation.getValue());
         PL0Instruction jumpOut = generateInstruction(PL0InstructionType.JMC, 0, 0);
 
         // run statements
         for (Statement statement :
                 cycle.statements) {
-            generateStatement(statement);
+            generateStatement(statement, level);
         }
 
         // increment
-        generateUnaryOperator(cycle.increment);
+        generateUnaryOperator(cycle.increment, level);
 
         // jump back
         generateInstruction(PL0InstructionType.JMP, 0, startingIndex);
         jumpOut.setParameter2(instructionCounter);
         
     }
-    private void generateUnaryOperator(UnaryOperation operation){
+    private void generateUnaryOperator(UnaryOperation operation, int level){
         TableSymbol symbol = SymbolTable.getInstance().getSymbolFromTable(operation.variable.name, true);
-        generateInstruction(PL0InstructionType.LOD, 0, symbol.getAddr());
+        generateInstruction(PL0InstructionType.LOD, level, symbol.getAddr());
         generateInstruction(PL0InstructionType.LIT, 0, 1);
         int operator = operation.increment ? ValueOperations.ADDITION.getValue() : ValueOperations.SUBSTRACTION.getValue();
         generateInstruction(PL0InstructionType.OPR, 0, operator);
-        generateInstruction(PL0InstructionType.STO, 0, symbol.getAddr());
+        generateInstruction(PL0InstructionType.STO, level, symbol.getAddr());
     }
 
-    private void generateWhile(Cycle cycle) throws CompilerException {
+    private void generateWhile(Cycle cycle, int level) throws CompilerException {
         int startingIndex = instructionCounter;
-        generateExpression(cycle.condition.leftPart);
-        generateExpression(cycle.condition.rightPart);
+        generateExpression(cycle.condition.leftPart, level);
+        generateExpression(cycle.condition.rightPart, level);
         generateInstruction(PL0InstructionType.OPR, 0, cycle.condition.operation.getValue());
         PL0Instruction jumpInstruction = generateInstruction(PL0InstructionType.JMC, 0, 0);
         for (Statement statement:
              cycle.statements) {
-            generateStatement(statement);
+            generateStatement(statement, level);
         }
         generateInstruction(PL0InstructionType.JMP, 0, startingIndex);
         jumpInstruction.setParameter2(instructionCounter);
     }
-    private void generateDoWhile(Cycle cycle) throws CompilerException{
+    private void generateDoWhile(Cycle cycle, int level) throws CompilerException{
         int startingIndex = instructionCounter;
         for (Statement statement:
                 cycle.statements) {
-            generateStatement(statement);
+            generateStatement(statement, level);
         }
-        generateExpression(cycle.condition.leftPart);
-        generateExpression(cycle.condition.rightPart);
+        generateExpression(cycle.condition.leftPart, level);
+        generateExpression(cycle.condition.rightPart, level);
         generateInstruction(PL0InstructionType.OPR, 0, cycle.condition.operation.getValue());
         PL0Instruction jumpInstruction = generateInstruction(PL0InstructionType.JMC, 0, 0);
         generateInstruction(PL0InstructionType.JMP, 0, startingIndex);
         jumpInstruction.setParameter2(instructionCounter);
     }
-    private void generateRepeatUntil(Cycle cycle) throws CompilerException{
+    private void generateRepeatUntil(Cycle cycle, int level) throws CompilerException{
         int startingIndex = instructionCounter;
         for (Statement statement:
                 cycle.statements) {
-            generateStatement(statement);
+            generateStatement(statement, level);
         }
-        generateExpression(cycle.condition.leftPart);
-        generateExpression(cycle.condition.rightPart);
+        generateExpression(cycle.condition.leftPart, level);
+        generateExpression(cycle.condition.rightPart, level);
         generateInstruction(PL0InstructionType.OPR, 0, cycle.condition.operation.getValue());
         generateInstruction(PL0InstructionType.JMC, 0, startingIndex);
     }
@@ -440,7 +450,7 @@ public class CodeGenerator {
             }
         }
     }
-    private void generateSwitch(Switch sw) throws CompilerException{
+    private void generateSwitch(Switch sw, int level) throws CompilerException{
         TableSymbol symbol = SymbolTable.getInstance().getSymbolFromTable(sw.variableDef.name, true);
         if(symbol != null && symbol.getType() == VarType.NUMBER){
             // check if all cases are different
@@ -455,7 +465,7 @@ public class CodeGenerator {
             List<PL0Instruction> jumpNextInstructions = new ArrayList<>();
             List<PL0Instruction> jumpOutInstructions = new ArrayList<>();
 
-            generateInstruction(PL0InstructionType.LOD, 0, symbol.getAddr());
+            generateInstruction(PL0InstructionType.LOD, level, symbol.getAddr());
             for (Case cs :
                     sw.cases) {
                 if(jumpNextInstructions.size()>0){
@@ -466,7 +476,7 @@ public class CodeGenerator {
                 jumpNextInstructions.add(jump);
                 for (Statement statement:
                      cs.statements) {
-                    generateStatement(statement);
+                    generateStatement(statement, level);
                 }
                 jumpOutInstructions.add(generateInstruction(PL0InstructionType.JMP, 0, 0));
 
@@ -476,7 +486,7 @@ public class CodeGenerator {
             }
             for (Statement statement :
                     sw.defaultCase.statements) {
-                generateStatement(statement);
+                generateStatement(statement, level);
             }
 
             for (PL0Instruction instruction: jumpOutInstructions) {
@@ -492,18 +502,18 @@ public class CodeGenerator {
         }
     }
 
-    private void generateExpression(Expression expression) throws CompilerException{
+    private void generateExpression(Expression expression, int level) throws CompilerException{
         List<Term> terms = expression.terms;
         if(terms.size() > 0){
             Term firstTerm = terms.get(0);
             // push 1 term to stack
-            generateTerm(firstTerm);
+            generateTerm(firstTerm, level);
 
             for (int i = 0; i < expression.operations.size(); i++) {
                 Term term = terms.get(i+1);
                 ValueOperations oper = expression.operations.get(i);
 
-                generateTerm(term);
+                generateTerm(term, level);
                 if(oper != ValueOperations.UNKNOWN){
                     generateInstruction(PL0InstructionType.OPR, 0, oper.getValue());
                 }else {
@@ -514,32 +524,32 @@ public class CodeGenerator {
     }
 
 
-    private void generateTerm(Term term) throws CompilerException{
+    private void generateTerm(Term term, int level) throws CompilerException{
         List<Factor> factors = term.factors;
         if(factors.size()>0){
             Factor firstFactor = factors.get(0);
-            generateFactor(firstFactor);
+            generateFactor(firstFactor, level);
             for (int i = 0; i < term.operations.size(); i++) {
                 Factor factor = factors.get(i+1);
-                generateFactor(factor);
+                generateFactor(factor, level);
                 ValueOperations oper = term.operations.get(i);
                 generateInstruction(PL0InstructionType.OPR, 0, oper.getValue()); //TODO bool operations
             }
         }
     }
 
-    private void generateFactor(Factor factor) throws CompilerException{
+    private void generateFactor(Factor factor, int level) throws CompilerException{
 
         switch (factor.factorType){
             case CALL:
-                generateCall(factor.call, true);
+                generateCall(factor.call, true, level);
                 break;
             case EXPRESSION:
-                generateExpression(factor.expression);
+                generateExpression(factor.expression, level);
                 break;
             case VARIABLE:
                 TableSymbol symbol = SymbolTable.getInstance().getSymbolFromTable(factor.vardef.name, true);
-                generateInstruction(PL0InstructionType.LOD, 0, symbol.getAddr());
+                generateInstruction(PL0InstructionType.LOD, level, symbol.getAddr());
                 break;
             case NUMBER:
             case BOOLEAN:
