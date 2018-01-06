@@ -2,6 +2,7 @@ package generator;
 
 import types.Identifier;
 import types.Method;
+import types.Parameter;
 import types.VariableDef;
 import types.enums.VarType;
 
@@ -11,14 +12,24 @@ public class TableSymbol {
     private int level;
     private boolean isConstant;
     private VarType type;
+    private int paramCount;
 
-    public TableSymbol(Identifier identifier, int addr, int level, boolean isConstant, VarType type){
+    public TableSymbol(Identifier identifier, int addr, int level){
         this.identifier = identifier;
         this.addr = addr;
         this.level = level;
-        this.isConstant = isConstant;
-        this.type = type;
+
+        if(identifier instanceof VariableDef || identifier instanceof Parameter){
+            VariableDef variableDef = (VariableDef) identifier;
+            this.isConstant = variableDef.isVarConstant;
+            this.type = variableDef.type;
+        }else {
+            Method method = (Method) identifier;
+            this.paramCount = method.parameters.size();
+        }
     }
+
+    public int getParamCount(){return paramCount;}
 
     public boolean isVariable(){
         return identifier instanceof VariableDef;

@@ -13,6 +13,8 @@ public class CodeGenerator {
     private Program root;
     private int instructionCounter;
     private int stackTop;
+    private int returnAddress;
+
 
     private List<PL0Instruction> instructions;
 
@@ -39,6 +41,10 @@ public class CodeGenerator {
         // register for base, ...
         generateInstruction(PL0InstructionType.INT, 0, STACK_OFFSET);
 
+        // 0) temp register for method returned value
+        returnAddress = stackTop;
+        generateInstruction(PL0InstructionType.LIT, 0, 0);
+
         // 1) variableDefs
         generateVariableDefs(variableDefs, this.stackTop, actualLevel);
 
@@ -55,13 +61,13 @@ public class CodeGenerator {
         // 3) other methods
         for (Method m :
                 methods) {
-            TableSymbol tmpSymbol = generateMethod(m, STACK_OFFSET);
+            TableSymbol tmpSymbol = generateMethod(m, STACK_OFFSET, false);
             SymbolTable.getInstance().addSymbol(tmpSymbol);
         }
 
         // change main jump value and process main method
         mainMethodInstr.setParameter2(instructionCounter);
-        TableSymbol mainMethodSymbol = generateMethod(mainMethod, tmpStackTop);
+        TableSymbol mainMethodSymbol = generateMethod(mainMethod, tmpStackTop, true);
         SymbolTable.getInstance().addSymbol(mainMethodSymbol);
 
 
@@ -106,7 +112,7 @@ public class CodeGenerator {
             generateInstruction(PL0InstructionType.INT, 0, variableDefs.size());
             for (VariableDef var :
                     variableDefs) {
-                TableSymbol symbol = new TableSymbol(var, startAddress, level, var.isVarConstant, var.type);
+                TableSymbol symbol = new TableSymbol(var, startAddress, level);
                 if(!SymbolTable.getInstance().addSymbol(symbol)){
                     throw new CompilerException(CompilerException.ERR_DUPLICATED_VARIABLE);
                 }
@@ -122,34 +128,42 @@ public class CodeGenerator {
         }
     }
 
-    private TableSymbol generateMethod(Method method, int addr) throws CompilerException{
+    private TableSymbol generateMethod(Method method, int addr, boolean isMainMethod) throws CompilerException{
         final int LEVEL = 1;
-        TableSymbol result = new TableSymbol(method, this.instructionCounter, LEVEL, false, null);
-        int lastTableSize = SymbolTable.getInstance().getSize();
-        generateParameters(method);
-        this.stackTop += addr + (SymbolTable.getInstance().getSize() - lastTableSize);
+        TableSymbol result = new TableSymbol(method, this.instructionCounter, LEVEL);
 
-        // local variableDefs
-        generateVariableDefs(method.localVars, this.stackTop, LEVEL);
-
-        // statements
-        for (Statement s :
-                method.statements) {
-            generateStatement(s);
-        }
-
-        // remove them from table
-        SymbolTable.getInstance().removeMultipleSymbols(method.localVars, LEVEL);
-        SymbolTable.getInstance().removeMultipleParameters(method.parameters, LEVEL);
-
-        // 'return' if missing
-        if (!method.statements.isEmpty()) {
-            Statement statement = method.statements.get(method.statements.size() - 1);
-            if (!(statement instanceof Return)) {
-                generateInstruction(PL0InstructionType.RET, 0, 0);
+        if(result != null){
+            if(!isMainMethod){
+                List<Parameter> params = method.parameters;
+                // add params to table
+                int paramAddress = stackTop;
+                generateInstruction(PL0InstructionType.INT, 0, STACK_OFFSET);
+                for (Parameter p : params) {
+                    TableSymbol newSymbol = new TableSymbol(p, paramAddress++, 1); //TODO check
+                    SymbolTable.getInstance().addSymbol(newSymbol);
+                    generateInstruction(PL0InstructionType.LOD, 1, newSymbol.getAddr());
+                }
             }
-        }
+            stackTop = addr + result.getParamCount();
 
+
+            // local variableDefs
+            generateVariableDefs(method.localVars, this.stackTop, LEVEL);
+
+            // statements
+            for (Statement s :
+                    method.statements) {
+                generateStatement(s);
+            }
+
+            generateReturn(method.rturn, method.returnType);
+            // remove them from table
+            SymbolTable.getInstance().removeMultipleSymbols(method.localVars, LEVEL);
+            SymbolTable.getInstance().removeMultipleParameters(method.parameters, LEVEL);
+            generateInstruction(PL0InstructionType.RET, 0, 0);
+
+
+        }
         return result;
     }
 
@@ -171,7 +185,7 @@ public class CodeGenerator {
                 generateFor((Cycle) statement);
                 break;
             case CALL:
-                generateCall((Call) statement);
+                generateCall((Call) statement, false);
                 break;
             case SWITCH:
                 generateSwitch((Switch)statement);
@@ -184,9 +198,6 @@ public class CodeGenerator {
                 break;
             case WHILE_DO:
                 generateWhile((Cycle) statement);
-                break;
-            case RETURN:
-                generateReturn((Return) statement);
                 break;
             case TERNARY:
                 generateTernaryAssignment((TernaryAssignment) statement);
@@ -222,34 +233,27 @@ public class CodeGenerator {
         }
     }
 
-    private void generateParameters(Method method)  {
-        List<Parameter> params = method.parameters;
+    private void generateCall(Call call, boolean withReturn) throws CompilerException {
+        TableSymbol methodSymbol = SymbolTable.getInstance().getSymbolFromTable(call.functionName, false);
 
-        if (params.isEmpty()) {
-            return;
-        }
-
-
-
-        //TODO check this... maybe better returning error when this happen
-        for (int i = 0; i < params.size(); i++) {
-            for (int j = 0; j < method.localVars.size(); j++) {
-                if (params.get(i).name.equals(method.localVars.get(j).name)) {
-                    //TODO error - same indentifier for vars and parameters
-                    return;
-                }
+        if(methodSymbol != null && call.parameters.size() == methodSymbol.getParamCount()){
+            List<String> parameters = call.parameters;
+            for (String parameter : parameters) {
+                TableSymbol symbol = SymbolTable.getInstance().getSymbolFromTable(parameter, true);
+                generateInstruction(PL0InstructionType.LOD, 0, symbol.getAddr());
             }
-        }
 
-        int actualAddr = this.stackTop + 1;
-        generateInstruction(PL0InstructionType.INT, 0, STACK_OFFSET);
+            generateInstruction(PL0InstructionType.CAL, 0, methodSymbol.getAddr());
+            if(withReturn){
+                generateInstruction(PL0InstructionType.LOD, 1, returnAddress);
+            }
 
-        // add params to table
-        for (Parameter p : params) {
-            TableSymbol newSymbol = new TableSymbol(p, actualAddr, 1, false, null); //TODO check
-            SymbolTable.getInstance().addSymbol(newSymbol);
-            generateInstruction(PL0InstructionType.LOD, 1, actualAddr);
-            actualAddr++;
+        }else{
+            if(methodSymbol == null){
+                throw new CompilerException(CompilerException.ERR_UNDEFINED_METHOD);
+            }else {
+                throw new CompilerException(CompilerException.ERR_WRONG_PARAMETER_NUMBER);
+            }
         }
     }
 
@@ -275,7 +279,7 @@ public class CodeGenerator {
         if(statement instanceof Expression){
             generateExpression((Expression) statement);
         }else if(statement instanceof Call){
-            generateCall((Call) statement);
+            generateCall((Call) statement, true);
         }else {
             throw new CompilerException(CompilerException.ERR_UNKNOWN);
         }
@@ -420,7 +424,22 @@ public class CodeGenerator {
         generateInstruction(PL0InstructionType.OPR, 0, cycle.condition.operation.getValue());
         generateInstruction(PL0InstructionType.JMC, 0, startingIndex);
     }
-    private void generateReturn(Return ret){}
+    private void generateReturn(Return ret, VarType returnType) throws CompilerException{
+        if(ret.value != null){
+            // return value
+            TableSymbol retSymbol = SymbolTable.getInstance().getSymbolFromTable(ret.value.name, true);
+            if(retSymbol != null && retSymbol.getType() == returnType){
+                generateInstruction(PL0InstructionType.LOD, retSymbol.getLevel(), retSymbol.getAddr());
+                generateInstruction(PL0InstructionType.STO, 1, returnAddress);
+            }else {
+                if(retSymbol == null){
+                    throw new CompilerException(CompilerException.ERR_UNDEFINED_VARIABLE);
+                }else {
+                    throw new CompilerException(CompilerException.ERR_WRONG_RETURN_TYPE);
+                }
+            }
+        }
+    }
     private void generateSwitch(Switch sw) throws CompilerException{
         TableSymbol symbol = SymbolTable.getInstance().getSymbolFromTable(sw.variableDef.name, true);
         if(symbol != null && symbol.getType() == VarType.NUMBER){
@@ -472,28 +491,7 @@ public class CodeGenerator {
             }
         }
     }
-    private void generateCall(Call call){
 
-        TableSymbol methodSymbol = SymbolTable.getInstance().getSymbolFromTable(call.name, false);
-        List<String> parameters = call.parameters;
-
-        for (String parameter : parameters) {
-            if(isValue(parameter)){
-                int value = 0;
-                if(parameter.chars().allMatch( Character::isDigit)){
-                    value = Integer.parseInt(parameter);
-                }else if(parameter.equals("true")){
-                    value = 1;
-                }
-                generateInstruction(PL0InstructionType.LIT, 0, value);
-            }else{
-                TableSymbol symbol = SymbolTable.getInstance().getSymbolFromTable(parameter, true);
-                generateInstruction(PL0InstructionType.LOD, 0, symbol.getAddr());
-            }
-        }
-
-        generateInstruction(PL0InstructionType.CAL, 0, methodSymbol.getAddr());
-    }
     private void generateExpression(Expression expression) throws CompilerException{
         List<Term> terms = expression.terms;
         if(terms.size() > 0){
@@ -534,7 +532,7 @@ public class CodeGenerator {
 
         switch (factor.factorType){
             case CALL:
-                generateCall(factor.call);
+                generateCall(factor.call, true);
                 break;
             case EXPRESSION:
                 generateExpression(factor.expression);

@@ -55,10 +55,10 @@ public class StatementVisitor extends ExpBaseVisitor<Statement> {
             ParallelAssignmentVisitor visitor = new ParallelAssignmentVisitor();
             statement = visitor.visitParallelAssignment(ctx.parallelAssignment());
         }
-        else if(ctx.retrn()!=null){
+        /*else if(ctx.retrn()!=null){
             ReturnVisitor returnVisitor=new ReturnVisitor();
             returnVisitor.visitRetrn(ctx.retrn());
-        }
+        }*/
 
         return statement;
     }

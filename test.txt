@@ -1,13 +1,15 @@
-int a := true;
-int b := 3;
-function main() : void
+int a := 31;
+int b := 21;
+int c := 22;
+
+function fce1(int x, int y, int z): int:
 {
-    switch(a){
-     case 1:
-        b:=1;
-        b := 2;
-     case 2: b := 3;
-     default: b := 5;
-    }
+    return y;
+}
+function main() : void :
+{
+    a:=1;
+    a:=call fce1(a, b, a);
+    return;
 }
 .

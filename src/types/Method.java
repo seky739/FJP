@@ -10,6 +10,7 @@ public class Method extends Identifier {
     public List<Parameter> parameters;
     public List<Statement> statements;
     public VarType returnType;
+    public Return rturn;
 
     public Method(String name){
         this.name = name;

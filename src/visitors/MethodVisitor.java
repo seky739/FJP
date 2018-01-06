@@ -2,10 +2,7 @@ package visitors;
 
 import expSources.ExpBaseVisitor;
 import expSources.ExpParser;
-import types.Method;
-import types.Parameter;
-import types.Statement;
-import types.VariableDef;
+import types.*;
 import types.enums.VarType;
 
 import java.util.List;
@@ -19,18 +16,18 @@ public class MethodVisitor extends ExpBaseVisitor<Method> {
     public Method visitMethod(ExpParser.MethodContext ctx) {
         Method method = new Method(ctx.IDENT().getText()); // nazev metody je dulezity pro urceni main metody
 
-        List<Parameter> parameters = ctx.parameter().stream().map(param->getParameter(param)).collect(toList());
-        method.parameters = parameters;
+        method.parameters = ctx.parameter().stream().map(param->getParameter(param)).collect(toList());
 
         method.returnType = VarType.getType(ctx.returnParam().getText());
-        String xx = ctx.returnParam().getText();
+        ReturnVisitor returnVisitor = new ReturnVisitor();
+        ExpParser.RetrnContext ret = ctx.retrn();
+        method.rturn = returnVisitor.visitRetrn(ctx.retrn());
+
         VariableVisitor variableVisitor = new VariableVisitor();
-        List<VariableDef> variableDefs = ctx.variableDef().stream().map(variableContext->variableContext.accept(variableVisitor)).collect(toList());
-        method.localVars = variableDefs;
+        method.localVars = ctx.variableDef().stream().map(variableContext->variableContext.accept(variableVisitor)).collect(toList());
 
         StatementVisitor statementVisitor = new StatementVisitor();
-        List<Statement> statements = ctx.statement().stream().map(statementContext->statementContext.accept(statementVisitor)).collect(toList());
-        method.statements = statements;
+        method.statements = ctx.statement().stream().map(statementContext->statementContext.accept(statementVisitor)).collect(toList());
 
         return method;
     }

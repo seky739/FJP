@@ -9,7 +9,7 @@ variableDef : variableConst? TYPE IDENT (ASSIGN variableValue)? END_STATEMENT ;
 variableConst: 'const';
 variableValue: NUMBER|BOOLVALUE;
 
-method: 'function' IDENT '(' (parameter (',' parameter)*)? ')' ':' returnParam  variableDef* '{' statement+ '}';
+method: 'function' IDENT '(' (parameter (',' parameter)*)? ')' ':' returnParam ':'  variableDef* '{' statement* retrn '}';
 parameter: TYPE IDENT;
 returnParam: TYPE | 'void';
 
@@ -23,7 +23,6 @@ statement :  assignment
 			  | switchStatement
 			  | ternaryAssignment
 			  | parallelAssignment
-			  | retrn
 			  | unaryOperation END_STATEMENT
 			;
 
