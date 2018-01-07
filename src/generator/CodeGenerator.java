@@ -63,11 +63,13 @@ public class CodeGenerator {
 
         int tmpStackTop = this.stackTopPointer;
 
+        int temp = stackTopPointer;
         // 3) other methods
         for (Method m :
                 methods) {
             TableSymbol tmpSymbol = generateMethod(m, METHOD_SIZE, false);
             SymbolTable.getInstance().addSymbol(tmpSymbol);
+            stackTopPointer = temp;
         }
 
         // change main jump value and process main method
@@ -135,16 +137,14 @@ public class CodeGenerator {
                 int tempAddress = paramAddress;
 
                 for (Parameter p : params) {
-                    TableSymbol newSymbol = new TableSymbol(p, instructionCounter, 1); //TODO check
+                    TableSymbol newSymbol = new TableSymbol(p, stackTopPointer, 1); //TODO check
                     SymbolTable.getInstance().addSymbol(newSymbol);
                     generateInstruction(PL0InstructionType.LOD, 1, tempAddress++);
                 }
             }
-            //stackTopPointer = addr + result.getParamCount();
-
 
             // local variableDefs
-            generateVariableDefs(method.localVars, this.stackTopPointer, 1);
+            generateVariableDefs(method.localVars, this.stackTopPointer, level);
 
             // statements
             for (Statement s :
@@ -231,7 +231,6 @@ public class CodeGenerator {
 
     private void generateCall(Call call, boolean withReturn, int level) throws CompilerException {
         TableSymbol methodSymbol = SymbolTable.getInstance().getSymbolFromTable(call.functionName, false);
-
         if(methodSymbol != null && call.parameters.size() == methodSymbol.getParamCount()){
             List<String> parameters = call.parameters;
             int tmpAddress = paramAddress;
@@ -241,7 +240,7 @@ public class CodeGenerator {
                 generateInstruction(PL0InstructionType.STO, level, tmpAddress++);
             }
 
-            generateInstruction(PL0InstructionType.CAL, 0, methodSymbol.getAddr());
+            generateInstruction(PL0InstructionType.CAL, level, methodSymbol.getAddr());
             if(withReturn){
                 generateInstruction(PL0InstructionType.LOD, level, returnAddress);
             }

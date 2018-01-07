@@ -1,12 +1,13 @@
-int a := true;
+int a := 1;
 function fce(): void:
 {
     a := 5;
+    return;
 }
 function main() : void :
 int b := 5;
 {
-    a:=1; 
+    a:=2;
     b:=6;
     call fce();
     return;

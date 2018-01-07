@@ -15,4 +15,15 @@ public class Method extends Identifier {
     public Method(String name){
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(name+": ");
+        for (Parameter p :
+                parameters) {
+            stringBuilder.append(p.name+", ");
+        }
+        return stringBuilder.toString();
+    }
 }
