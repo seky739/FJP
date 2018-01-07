@@ -8,12 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CodeGenerator {
-    public static final int STACK_OFFSET = 3;
-    private static final int STACK_BASE = 1;
+    public static final int METHOD_SIZE = 3;
     private static final int MAX_PARAM_COUNT = 3;
     private Program root;
     private int instructionCounter;
-    private int stackTop;
+    private int stackTopPointer;
+    
     private int returnAddress;
     private int paramAddress;
 
@@ -27,7 +27,7 @@ public class CodeGenerator {
 
         this.instructions = new ArrayList<>();
 
-        this.stackTop = 0;
+        this.stackTopPointer = 0;
     }
 
 
@@ -41,34 +41,37 @@ public class CodeGenerator {
         List<Method> methods = block.methods;
 
         // register for base, ...
-        generateInstruction(PL0InstructionType.INT, 0, STACK_OFFSET);
+        generateInstruction(PL0InstructionType.INT, 0, METHOD_SIZE);
 
         // 0) temp register for method returned value + starting address for parameters
-        returnAddress = stackTop;
+        returnAddress = stackTopPointer;
         generateInstruction(PL0InstructionType.LIT, 0, 0);
-        paramAddress = stackTop;
+        paramAddress = stackTopPointer;
         for (int i = 0; i < MAX_PARAM_COUNT; i++) {
             generateInstruction(PL0InstructionType.LIT, 0, 0);
         }
 
 
         // 1) variableDefs
-        generateVariableDefs(variableDefs, this.stackTop, actualLevel);
+        generateVariableDefs(variableDefs, this.stackTopPointer, actualLevel);
 
 
         //2) finding Main function in the last (always last)
         Method mainMethod = methods.get(methods.size()-1);
+        if(!validateMainMethod(mainMethod)){
+            throw new CompilerException(CompilerException.ERR_NO_VALID_MAIN_METHOD);
+        }
         methods.remove(methods.size()-1); // remove it as it is not a usual method
 
         // need to change later
         PL0Instruction mainMethodInstr = generateInstruction(PL0InstructionType.JMP, 0, 0);
 
-        int tmpStackTop = this.stackTop;
+        int tmpStackTop = this.stackTopPointer;
 
         // 3) other methods
         for (Method m :
                 methods) {
-            TableSymbol tmpSymbol = generateMethod(m, STACK_OFFSET, false);
+            TableSymbol tmpSymbol = generateMethod(m, METHOD_SIZE, false);
             SymbolTable.getInstance().addSymbol(tmpSymbol);
         }
 
@@ -96,13 +99,13 @@ public class CodeGenerator {
     private PL0Instruction generateInstruction(PL0InstructionType instruction, int parameter1, int parameter2){
         switch (instruction){
             case INT:
-                this.stackTop += parameter2;
+                this.stackTopPointer += parameter2;
                 break;
             case LIT: case LOD:
-                this.stackTop++;
+                this.stackTopPointer++;
                 break;
             case STO: case OPR: case JMC:
-                this.stackTop--;
+                this.stackTopPointer--;
                 break;
         }
         PL0Instruction newInstruction = new PL0Instruction(instructionCounter, instruction, parameter1, parameter2);
@@ -137,13 +140,18 @@ public class CodeGenerator {
 
     private TableSymbol generateMethod(Method method, int addr, boolean isMainMethod) throws CompilerException{
         int level = isMainMethod ? 0 : 1;
+
+        if(method.parameters.size() > MAX_PARAM_COUNT){
+            throw new CompilerException(CompilerException.ERR_TOO_MANY_PARAMETERS);
+        }
+
         TableSymbol result = new TableSymbol(method, this.instructionCounter, level);
 
         if(result != null){
             if(!isMainMethod){
                 List<Parameter> params = method.parameters;
                 // add params to table
-                generateInstruction(PL0InstructionType.INT, 0, STACK_OFFSET);
+                generateInstruction(PL0InstructionType.INT, 0, METHOD_SIZE);
                 int tempAddress = paramAddress;
 
                 for (Parameter p : params) {
@@ -152,11 +160,11 @@ public class CodeGenerator {
                     generateInstruction(PL0InstructionType.LOD, 1, newSymbol.getAddr());
                 }
             }
-            stackTop = addr + result.getParamCount();
+            stackTopPointer = addr + result.getParamCount();
 
 
             // local variableDefs
-            generateVariableDefs(method.localVars, this.stackTop, level);
+            generateVariableDefs(method.localVars, this.stackTopPointer, level);
 
             // statements
             for (Statement s :
@@ -448,6 +456,8 @@ public class CodeGenerator {
                     throw new CompilerException(CompilerException.ERR_WRONG_RETURN_TYPE);
                 }
             }
+        }else if(returnType != VarType.VOID){
+            throw new CompilerException(CompilerException.ERR_MISSING_RETURN_VALUE);
         }
     }
     private void generateSwitch(Switch sw, int level) throws CompilerException{
@@ -558,19 +568,19 @@ public class CodeGenerator {
         }
     }
 
-
-    private void deleteLocalVariable(){
-
-    }
-
-
-    public static boolean isValue(String value){
-        boolean result = false;
-        if(value.chars().allMatch( Character::isDigit ) ||
-                value.equals("true") || value.equals("false")){
-            result = true;
+    private boolean validateMainMethod(Method mainMethod){
+        if(!mainMethod.name.equals("main")){
+            return false;
         }
-        return result;
+
+        if(mainMethod.returnType != VarType.VOID){
+            return false;
+        }
+
+        if(mainMethod.parameters.size() > 0){
+            return false;
+        }
+        return true;
     }
 
 }

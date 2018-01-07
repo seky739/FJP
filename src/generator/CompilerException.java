@@ -12,6 +12,9 @@ public class CompilerException extends Exception{
     public static final String ERR_UNDEFINED_METHOD = "Undefined method";
     public static final String ERR_DUPLICATE_METHOD = "Duplicated method";
     public static final String ERR_WRONG_PARAMETER_NUMBER = "Wrong parameter number";
+    public static final String ERR_TOO_MANY_PARAMETERS = "Too many method parameters. Maximum parameter count is 3";
+    public static final String ERR_NO_VALID_MAIN_METHOD = "No valid main method was found";
+    public static final String ERR_MISSING_RETURN_VALUE = "Missing return variable";
 
 
     public CompilerException(String message){
