@@ -61,15 +61,8 @@ public class SymbolTable {
         return removed;
     }
 
-    public boolean removeMultipleSymbols(List<TableSymbol> symbols){
-        boolean removed = true;
-        for (TableSymbol symbol :
-                symbols) {
-            if (!removeSymbol(symbol)) {
-                removed = false;
-            }
-        }
-        return removed;
+    public List<TableSymbol> getTableOfSymbols() {
+        return tableOfSymbols;
     }
 
     public boolean removeMultipleParameters(List<Parameter> params, int level){

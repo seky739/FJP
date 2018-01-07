@@ -1,6 +1,7 @@
 package generator;
 
 import types.*;
+import types.enums.ConditionalOperation;
 import types.enums.ValueOperations;
 import types.enums.VarType;
 
@@ -18,21 +19,15 @@ public class CodeGenerator {
     private int paramAddress;
 
 
-    private List<PL0Instruction> instructions;
-
-
     public CodeGenerator(Program root){
         this.root = root;
         this.instructionCounter = 0;
-
-        this.instructions = new ArrayList<>();
 
         this.stackTopPointer = 0;
     }
 
 
-    public List<String> generateAllInstructions() throws CompilerException{
-        List<String> result = new ArrayList<>();
+    public void generate() throws CompilerException{
         int actualLevel = 0;
 
         Block block = root.block;
@@ -79,21 +74,6 @@ public class CodeGenerator {
         mainMethodInstr.setParameter2(instructionCounter);
         TableSymbol mainMethodSymbol = generateMethod(mainMethod, tmpStackTop, true);
         SymbolTable.getInstance().addSymbol(mainMethodSymbol);
-
-
-        //TODO output
-        System.out.println("----------");
-        write();
-
-
-        return result;
-    }
-
-    private void write(){
-        for (PL0Instruction instruction :
-                instructions) {
-            System.out.println(instruction);
-        }
     }
 
     private PL0Instruction generateInstruction(PL0InstructionType instruction, int parameter1, int parameter2){
@@ -109,7 +89,7 @@ public class CodeGenerator {
                 break;
         }
         PL0Instruction newInstruction = new PL0Instruction(instructionCounter, instruction, parameter1, parameter2);
-        instructions.add(newInstruction);
+        PL0InstructionList.getInstance().addInstruction(newInstruction);
         instructionCounter++;
 
 
@@ -155,16 +135,16 @@ public class CodeGenerator {
                 int tempAddress = paramAddress;
 
                 for (Parameter p : params) {
-                    TableSymbol newSymbol = new TableSymbol(p, tempAddress++, 1); //TODO check
+                    TableSymbol newSymbol = new TableSymbol(p, instructionCounter, 1); //TODO check
                     SymbolTable.getInstance().addSymbol(newSymbol);
-                    generateInstruction(PL0InstructionType.LOD, 1, newSymbol.getAddr());
+                    generateInstruction(PL0InstructionType.LOD, 1, tempAddress++);
                 }
             }
-            stackTopPointer = addr + result.getParamCount();
+            //stackTopPointer = addr + result.getParamCount();
 
 
             // local variableDefs
-            generateVariableDefs(method.localVars, this.stackTopPointer, level);
+            generateVariableDefs(method.localVars, this.stackTopPointer, 1);
 
             // statements
             for (Statement s :
@@ -221,7 +201,7 @@ public class CodeGenerator {
             case OTHER:
             default:
                 //TODO
-                System.out.println("something different");
+                System.err.println("something different");
         }
     }
 
@@ -447,7 +427,7 @@ public class CodeGenerator {
             // return value
             TableSymbol retSymbol = SymbolTable.getInstance().getSymbolFromTable(ret.value.name, true);
             if(retSymbol != null && retSymbol.getType() == returnType){
-                generateInstruction(PL0InstructionType.LOD, retSymbol.getLevel(), retSymbol.getAddr());
+                generateInstruction(PL0InstructionType.LOD, 1, retSymbol.getAddr());
                 generateInstruction(PL0InstructionType.STO, 1, returnAddress);
             }else {
                 if(retSymbol == null){
@@ -482,6 +462,7 @@ public class CodeGenerator {
                     jumpNextInstructions.get(jumpNextInstructions.size()-1).setParameter2(instructionCounter);
                 }
                 generateInstruction(PL0InstructionType.LIT, 0, cs.value);
+                generateInstruction(PL0InstructionType.OPR, 0, ConditionalOperation.EQUAL.getValue());
                 PL0Instruction jump = generateInstruction(PL0InstructionType.JMC, 0, 0);
                 jumpNextInstructions.add(jump);
                 for (Statement statement:

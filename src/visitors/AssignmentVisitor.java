@@ -13,7 +13,6 @@ public class AssignmentVisitor extends ExpBaseVisitor<Assignment> {
 
     @Override
     public Assignment visitAssignment(ExpParser.AssignmentContext ctx) {
-        System.out.println("Visit Assignment "+ ctx.getText());
         ExpressionVisitor expressionVisitor=new ExpressionVisitor();
 
         Assignment assignment=new Assignment();

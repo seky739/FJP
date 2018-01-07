@@ -10,6 +10,8 @@ public enum PL0InstructionType {
     JMP, // jmp 0,A    proveď skok na adresu A
     JMC, // jmc 0,A    proveď skok na adresu A, je-li hodnota na vrcholu zásobníku 0
     RET // ret 0,0    návrat z procedury (return)
+
+
 }
 
 

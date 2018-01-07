@@ -26,7 +26,7 @@ statement :  assignment
 			  | unaryOperation END_STATEMENT
 			;
 
-forStatement: 'for' '('condition';' unaryOperation ')' '{' statement+ '}'; // predelal jsem for aby to bylo mene problematicke
+forStatement: 'for' '('condition';' unaryOperation ')' '{' statement+ '}';
 whileStatement: 'while' '('condition')' '{' statement+ '}';
 doWhileStatement: 'do' '{' statement+ '}' 'while' '('condition')' END_STATEMENT;
 repeatStatement: 'repeat' '{' statement+ '}' 'until' '(' condition ')' END_STATEMENT;
@@ -46,12 +46,12 @@ cas : 'case' NUMBER ':' statement*;
 defaultcas: 'default' ':' statement*;
 
 retrn : 'return' IDENT? END_STATEMENT; // return something; / return;
-unaryOperation: unaryOperator IDENT; //TODO neni
-unaryOperator: '++' | '--'; //TODO neni
+unaryOperation: unaryOperator IDENT;
+unaryOperator: '++' | '--';
 
 condition : expression COMPARATOR expression;
 
-expression : term ((PREOPERATION|BOOLOPERATION) term)* //TODO pridelat unarni znamenko pred cislem ... potom
+expression : term ((PREOPERATION|BOOLOPERATION) term)*
         ; //TODO mozna jeste neco chybi.. zatim mi nic nenapada
 
 term : factor (MULDIV factor)*; //pridano kvuli operaci nasobeni a deleni
@@ -68,7 +68,7 @@ BOOLVALUE : 'true' | 'false';
 TYPE : 'bool' | 'int';
 COMPARATOR: '='|'#'|'<'|'<='|'>'|'>=';
 PREOPERATION: '+' | '-' ;
-BOOLOPERATION: '|' | '&';
+BOOLOPERATION: '||' | '&&';
 MULDIV : '*' | '/';
 ASSIGN: ':=';
 END_STATEMENT: ';';

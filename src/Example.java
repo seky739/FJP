@@ -1,7 +1,6 @@
 import expSources.ExpLexer;
 import expSources.ExpParser;
-import generator.CodeGenerator;
-import generator.CompilerException;
+import generator.*;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import types.Program;
@@ -15,9 +14,6 @@ import java.nio.charset.StandardCharsets;
 public class Example {
 
     public static void main(String[] args) throws IOException {
-        //TODO remove this
-        args = new String[]{"test.txt"};
-
 
         if(args.length == 1){
             final String fileName = args[0];
@@ -36,19 +32,18 @@ public class Example {
 
             CodeGenerator generator = new CodeGenerator(program);
             try {
-                generator.generateAllInstructions();
+                generator.generate();
             } catch (CompilerException e) {
                 e.printStackTrace();
             }
 
-            // table of symbols
 
-
-            //TODO check errors
+            FileGenerator.getInstance().write(fileName, PL0InstructionList.getInstance(), SymbolTable.getInstance());
 
         }else {
             //TODO print help
             print("Chybny pocet parametru");
+            print("Spustit pomoci prikaz: java -jar aplikace.jar vstup.txt");
         }
     }
 

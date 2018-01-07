@@ -1,19 +1,14 @@
-int a := 31;
-int b := 21;
-
-function fce2(int x): int :
+int a := true;
+function fce(): void:
 {
-	x:=6;
-	return x;
-}
-function fce1(int x, int y, int z): int:
-{
-    y:= 5;
-    return y;
+    a := 5;
 }
 function main() : void :
+int b := 5;
 {
-    a:=1 +call fce1(a, b, a) + call fce2(a); 
+    a:=1; 
+    b:=6;
+    call fce();
     return;
 }
 .

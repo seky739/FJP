@@ -29,6 +29,10 @@ public class TableSymbol {
         }
     }
 
+    public String toString(){
+        return String.format("Name: %s, level: %d, address: %d", identifier.name, level, addr);
+    }
+
     public int getParamCount(){return paramCount;}
 
     public boolean isVariable(){

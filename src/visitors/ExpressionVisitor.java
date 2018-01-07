@@ -33,7 +33,6 @@ public class ExpressionVisitor extends ExpBaseVisitor<Expression> {
                 }
             }
         }
-        System.out.println( Arrays.toString(expression.operations.toArray()));
         return expression;
     }
 

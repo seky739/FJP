@@ -6,11 +6,12 @@ int c := 2;
 {
     a := c;
     c := true;
+    return;
 }
 
 function main(): int
 {
-    call fce;
+    call fce();
     if (a = 5) {
         b := false;
     }else{

@@ -27,7 +27,6 @@ public class TermVisitor extends ExpBaseVisitor<Term> {
                 term.operations.add(ValueOperations.getOperationByChar(t.getText()));
             }
         }
-        System.out.println( Arrays.toString(term.operations.toArray()));
         return term;
     }
 }

@@ -21,7 +21,7 @@ public enum ConditionalOperation {
             case "=" :
                 return EQUAL;
 
-            case "!=" :
+            case "#" :
                 return NOT_EQUAL;
 
             case ">" :
